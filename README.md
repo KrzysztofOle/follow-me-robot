@@ -37,6 +37,11 @@ Test I2C:
 - magistrala: `I2C1`
 - linie: `PB6` (SCL), `PB7` (SDA)
 
+VS Code:
+- `Terminal -> Run Task` i wybierz `PIO: Build uart_led`, `PIO: Upload uart_led`,
+  `PIO: Monitor uart_led`, `PIO: Build i2c_scan`, `PIO: Upload i2c_scan` albo
+  `PIO: Monitor i2c_scan`
+
 Docelowo: STM32 NUCLEO-H755ZI-Q - STM32H755ZIT6 ARM Cortex M7/M4
 
 
