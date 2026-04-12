@@ -47,15 +47,38 @@ Test LCD + Sensor:
 - firmware w `stm32_f103_project/src/tests/grove_lcd_sensor/main.c`
 - env: `grove_lcd_sensor`
 - adres LCD: `0x3E`
-- adres czujnika: `0x11`
+- adres czujnika: `0x13`
 - linie: `PB8` (SCL), `PB9` (SDA)
 - LCD pokazuje dystans i temperaturę z URM09
+- zoptymalizowane pod szybkość: I2C 400 kHz, tryb automatyczny, zakres 150 cm
+
+Test LCD + 2x URM09:
+- firmware w `stm32_f103_project/src/tests/grove_lcd_dual_urm09/main.c`
+- env: `grove_lcd_dual_urm09`
+- adres LCD: `0x3E`
+- adres czujników: `0x11` i `0x13`
+- linie: `PB8` (SCL), `PB9` (SDA)
+- LCD pokazuje dane z dwóch URM09 jednocześnie
+
+Fast URM09 log:
+- firmware w `stm32_f103_project/src/tests/urm09_fast_log/main.c`
+- env: `urm09_fast_log`
+- adres czujnika: `0x11`
+- terminal: `USART2` na `115200 8N1`
+- linie: `PB8` (SCL), `PB9` (SDA)
+- program loguje możliwie szybko sam dystans z URM09
+- wyzwala pomiar na jednym czujniku w każdej pętli, ale wypisuje tylko co 6. odczyt, żeby zasymulować rzadszy log przy większej liczbie czujników
+- na starcie pokazuje skan I2C, żeby od razu było widać, co siedzi na magistrali
 
 Zmiana adresu URM09:
 - firmware w `stm32_f103_project/src/tests/urm09_addr_tool/main.c`
 - env: `urm09_addr_tool`
 - interfejs: `I2C1`
 - terminal: `USART2` na `115200 8N1`
+- program sam wykrywa pojedynczy URM09, jeśli to jedyny kandydat na busie
+- po zmianie adresu trzeba odłączyć URM09 od zasilania, a potem po ponownym podłączeniu potwierdzić w terminalu, zanim program sprawdzi nowy adres na busie
+- po potwierdzeniu program robi ponowny skan busa i pokazuje widoczne adresy
+- jeśli nowy adres odpowiada, program sam kończy się komunikatem sukcesu z logiem `stary -> nowy`
 
 VS Code:
 - `Terminal -> Run Task` i wybierz `PIO: Build uart_led`, `PIO: Upload uart_led`,
@@ -63,7 +86,10 @@ VS Code:
   `PIO: Monitor i2c_scan`
 - są też taski 3 w 1: `UART LED: Build + Upload + Monitor` oraz
   `I2C Scan: Build + Upload + Monitor`, `Grove LCD: Build + Upload + Monitor`,
-  `Grove LCD + Sensor: Build + Upload + Monitor`, `URM09 Addr: Build + Upload + Monitor`
+  `Grove LCD + Sensor: Build + Upload + Monitor`,
+  `Grove LCD + 2x URM09: Build + Upload + Monitor`,
+  `URM09 Fast Log: Build + Upload + Monitor`,
+  `URM09 Addr: Build + Upload + Monitor`
 - debug dla testów znajdziesz w `Run and Debug`
 
 Docelowo: STM32 NUCLEO-H755ZI-Q - STM32H755ZIT6 ARM Cortex M7/M4

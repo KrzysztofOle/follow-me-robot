@@ -3,6 +3,11 @@
 
 I2C_HandleTypeDef hi2c1;
 
+#define I2C_CLOCK_SPEED 400000U
+#define URM09_ADDR 0x11U
+#define URM09_RANGE_150 0x00U
+#define URM09_MODE_AUTOMATIC 0x80U
+
 static void MX_I2C1_Init(void);
 static void Error_Handler(void);
 static void LCD_WriteCommand(uint8_t cmd);
@@ -15,7 +20,6 @@ static void LCD_PrintPadded(const char *text, uint8_t width);
 static HAL_StatusTypeDef URM09_WriteRegister(uint8_t reg, uint8_t value);
 static HAL_StatusTypeDef URM09_ReadRegisters(uint8_t reg, uint8_t *data, uint16_t len);
 static HAL_StatusTypeDef URM09_SetModeRange(uint8_t range, uint8_t mode);
-static HAL_StatusTypeDef URM09_Measurement(void);
 static HAL_StatusTypeDef URM09_ReadDistanceTemp(int16_t *distance_cm, int16_t *temperature_x10);
 
 void HAL_I2C_MspInit(I2C_HandleTypeDef *hi2c)
@@ -49,27 +53,17 @@ int main(void)
 
   LCD_Init();
   LCD_Clear();
-  if (URM09_SetModeRange(0x20U, 0x00U) != HAL_OK)
+  if (URM09_SetModeRange(URM09_RANGE_150, URM09_MODE_AUTOMATIC) != HAL_OK)
   {
     Error_Handler();
   }
+
+  HAL_Delay(50U);
 
   while (1)
   {
     int16_t distance_cm = 0;
     int16_t temperature_x10 = 0;
-
-    if (URM09_Measurement() != HAL_OK)
-    {
-      LCD_SetCursor(0U, 0U);
-      LCD_PrintPadded("Grove LCD OK", 16U);
-      LCD_SetCursor(1U, 0U);
-      LCD_PrintPadded("Measure ERR", 16U);
-      HAL_Delay(500U);
-      continue;
-    }
-
-    HAL_Delay(120U);
 
     if (URM09_ReadDistanceTemp(&distance_cm, &temperature_x10) != HAL_OK)
     {
@@ -77,7 +71,7 @@ int main(void)
       LCD_PrintPadded("Grove LCD OK", 16U);
       LCD_SetCursor(1U, 0U);
       LCD_PrintPadded("Sensor read ERR", 16U);
-      HAL_Delay(500U);
+      HAL_Delay(50U);
       continue;
     }
 
@@ -94,14 +88,14 @@ int main(void)
     LCD_SetCursor(1U, 0U);
     LCD_PrintPadded(line2, 16U);
 
-    HAL_Delay(500U);
+    HAL_Delay(20U);
   }
 }
 
 static void MX_I2C1_Init(void)
 {
   hi2c1.Instance = I2C1;
-  hi2c1.Init.ClockSpeed = 100000U;
+  hi2c1.Init.ClockSpeed = I2C_CLOCK_SPEED;
   hi2c1.Init.DutyCycle = I2C_DUTYCYCLE_2;
   hi2c1.Init.OwnAddress1 = 0U;
   hi2c1.Init.AddressingMode = I2C_ADDRESSINGMODE_7BIT;
@@ -200,12 +194,12 @@ static void LCD_PrintPadded(const char *text, uint8_t width)
 
 static HAL_StatusTypeDef URM09_WriteRegister(uint8_t reg, uint8_t value)
 {
-  return HAL_I2C_Mem_Write(&hi2c1, (uint16_t)(0x11U << 1), reg, I2C_MEMADD_SIZE_8BIT, &value, 1U, 100U);
+  return HAL_I2C_Mem_Write(&hi2c1, (uint16_t)(URM09_ADDR << 1), reg, I2C_MEMADD_SIZE_8BIT, &value, 1U, 50U);
 }
 
 static HAL_StatusTypeDef URM09_ReadRegisters(uint8_t reg, uint8_t *data, uint16_t len)
 {
-  return HAL_I2C_Mem_Read(&hi2c1, (uint16_t)(0x11U << 1), reg, I2C_MEMADD_SIZE_8BIT, data, len, 100U);
+  return HAL_I2C_Mem_Read(&hi2c1, (uint16_t)(URM09_ADDR << 1), reg, I2C_MEMADD_SIZE_8BIT, data, len, 50U);
 }
 
 static HAL_StatusTypeDef URM09_SetModeRange(uint8_t range, uint8_t mode)
@@ -213,28 +207,17 @@ static HAL_StatusTypeDef URM09_SetModeRange(uint8_t range, uint8_t mode)
   return URM09_WriteRegister(0x07U, (uint8_t)(range | mode));
 }
 
-static HAL_StatusTypeDef URM09_Measurement(void)
-{
-  return URM09_WriteRegister(0x08U, 0x01U);
-}
-
 static HAL_StatusTypeDef URM09_ReadDistanceTemp(int16_t *distance_cm, int16_t *temperature_x10)
 {
-  uint8_t distance_buf[2] = {0};
-  uint8_t temperature_buf[2] = {0};
+  uint8_t data[4] = {0};
 
-  if (URM09_ReadRegisters(0x03U, distance_buf, 2U) != HAL_OK)
+  if (URM09_ReadRegisters(0x03U, data, 4U) != HAL_OK)
   {
     return HAL_ERROR;
   }
 
-  if (URM09_ReadRegisters(0x05U, temperature_buf, 2U) != HAL_OK)
-  {
-    return HAL_ERROR;
-  }
-
-  *distance_cm = (int16_t)((distance_buf[0] << 8) | distance_buf[1]);
-  *temperature_x10 = (int16_t)((temperature_buf[0] << 8) | temperature_buf[1]);
+  *distance_cm = (int16_t)((data[0] << 8) | data[1]);
+  *temperature_x10 = (int16_t)((data[2] << 8) | data[3]);
   return HAL_OK;
 }
 

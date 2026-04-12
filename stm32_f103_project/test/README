@@ -72,9 +72,10 @@ Po starcie LCD powinien wyczyścić ekran i pokazać:
 - env: `grove_lcd_sensor`
 - interfejs: `I2C1`
 - adres LCD: `0x3E`
-- adres czujnika: `0x11`
+- adres czujnika: `0x13`
 - linie: `PB8` (SCL), `PB9` (SDA)
 - cel: pokazać na LCD odczyt dystansu i temperatury z URM09
+- tryb pracy: automatyczny, zakres 150 cm, I2C 400 kHz
 
 ### Oczekiwany wynik
 
@@ -82,6 +83,52 @@ LCD powinien pokazywać:
 
 - `Dist: ... cm`
 - `Temp: ... C`
+
+To jest obecnie najszybsza wersja tego testu. Program:
+
+- czyta dystans i temperaturę jednym odczytem I2C z rejestrów URM09
+- nie wyzwala osobnego pomiaru w każdej iteracji
+- odświeża LCD możliwie szybko, bez zbędnych opóźnień
+
+## Test LCD + 2x URM09
+
+- env: `grove_lcd_dual_urm09`
+- interfejs: `I2C1`
+- adres LCD: `0x3E`
+- adres lewego czujnika: `0x11`
+- adres prawego czujnika: `0x13`
+- linie: `PB8` (SCL), `PB9` (SDA)
+- cel: pokazać dane z dwóch URM09 jednocześnie
+
+### Oczekiwany wynik
+
+LCD pokazuje dwa wiersze:
+
+- `11 D... T...`
+- `13 D... T...`
+
+Jeśli któryś z czujników nie odpowiada, na jego linii pojawi się `ERR`.
+
+## Fast URM09 log
+
+- env: `urm09_fast_log`
+- interfejs: `I2C1`
+- adres czujnika: `0x11`
+- terminal: `USART2` na `115200 8N1`
+- linie I2C: `PB8` (SCL), `PB9` (SDA)
+- cel: jak najszybciej logować sam dystans z URM09 na terminal
+- program wyzwala pomiar na jednym czujniku w każdej pętli, ale wypisuje tylko co 6. odczyt
+- na starcie pokazuje też skan magistrali I2C
+
+### Oczekiwany wynik
+
+Na terminalu lecą kolejne linie w formacie:
+
+- `123 cm`
+- `124 cm`
+- `122 cm`
+
+To jest lżejszy test niż LCD i nadaje się do sprawdzenia maksymalnej szybkości odczytu sensora.
 
 ## Zmiana adresu URM09
 
@@ -93,10 +140,19 @@ LCD powinien pokazywać:
 ### Oczekiwany przebieg
 
 1. program skanuje magistralę I2C i wypisuje znalezione urządzenia
-2. program odczytuje rejestry identyfikacyjne URM09
-3. na terminalu podajesz nowy adres, np. `0x12`
-4. program zapisuje nowy adres do URM09
-5. program weryfikuje odpowiedź na nowym adresie
+2. jeśli znajdzie dokładnie jedno urządzenie I2C, program bierze je automatycznie
+3. jeśli jest zero albo kilka urządzeń, prosisz o ręczny adres
+4. na terminalu podajesz nowy adres, np. `0x12`
+5. program zapisuje nowy adres do URM09
+6. program prosi o odłączenie zasilania czujnika
+7. po ponownym podłączeniu zasilania i wciśnięciu Enter program weryfikuje odpowiedź na nowym adresie
+
+Na początku programu pojawią się też krótkie komunikaty etapów,
+żeby było widać, na czym program aktualnie stoi.
+Po potwierdzeniu program robi też ponowne skanowanie I2C i pokazuje,
+jakie adresy są widoczne po restarcie sensora.
+Jeśli nowy adres odpowiada, program sam wypisze komunikat sukcesu
+z logiem `stary -> nowy`.
 
 ## Uwagi
 

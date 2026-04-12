@@ -10,11 +10,14 @@ static void MX_I2C1_Init(void);
 static void Error_Handler(void);
 static void UART_SendChar(char ch);
 static void UART_SendString(const char *text);
+static void UART_SendLine(const char *text);
 static void UART_SendHexByte(uint8_t value);
 static char UART_GetChar(void);
 static void UART_ReadLine(char *buffer, uint16_t buffer_size);
+static void UART_FlushRx(void);
 static void UART_PromptAddress(const char *prompt, uint8_t default_addr, uint8_t *addr_out);
-static void I2C_ScanBus(void);
+static uint8_t I2C_ScanBus(uint8_t *found_addrs, uint8_t max_found);
+static void UART_ReportFoundAddresses(const uint8_t *found_addrs, uint8_t found_count);
 static HAL_StatusTypeDef URM09_ReadReg(uint8_t addr, uint8_t reg, uint8_t *value);
 static HAL_StatusTypeDef URM09_WriteReg(uint8_t addr, uint8_t reg, uint8_t value);
 static void URM09_ReportIdentity(uint8_t addr);
@@ -22,6 +25,7 @@ static HAL_StatusTypeDef URM09_GetAddress(uint8_t addr, uint8_t *value);
 static HAL_StatusTypeDef URM09_GetPid(uint8_t addr, uint8_t *value);
 static HAL_StatusTypeDef URM09_GetVersion(uint8_t addr, uint8_t *value);
 static HAL_StatusTypeDef URM09_ModifyAddress(uint8_t current_addr, uint8_t new_addr);
+static void URM09_WaitForPowerCycle(void);
 static uint8_t ParseAddress(const char *text, uint8_t *addr_out);
 
 void HAL_UART_MspInit(UART_HandleTypeDef *huart)
@@ -74,41 +78,85 @@ int main(void)
 {
   uint8_t current_addr = 0x11U;
   uint8_t new_addr = 0U;
+  uint8_t found_addrs[16] = {0};
+  uint8_t found_count = 0U;
 
   HAL_Init();
   MX_USART2_UART_Init();
   MX_I2C1_Init();
 
-  UART_SendString("\r\nURM09 address tool\r\n");
-  UART_SendString("Bus scan:\r\n");
-  I2C_ScanBus();
+  UART_SendLine("");
+  UART_SendLine("================================");
+  UART_SendLine("URM09 address tool");
+  UART_SendLine("================================");
 
-  UART_PromptAddress("Current URM09 address [0x11]: ", 0x11U, &current_addr);
+  UART_SendLine("Stage 1/5: scanning I2C bus");
+  found_count = I2C_ScanBus(found_addrs, (uint8_t)(sizeof(found_addrs) / sizeof(found_addrs[0])));
 
-  UART_SendString("\r\nReading identity registers...\r\n");
+  UART_SendLine("Stage 2/5: detecting URM09");
+  if (found_count == 1U)
+  {
+    current_addr = found_addrs[0];
+    UART_SendString("Single I2C device found, using 0x");
+    UART_SendHexByte(current_addr);
+    UART_SendString("\r\n");
+  }
+  else
+  {
+    UART_SendLine("No single I2C device candidate found.");
+    UART_SendLine("Select the current URM09 address manually.");
+    UART_PromptAddress("Current URM09 address [0x11]: ", 0x11U, &current_addr);
+  }
+
+  UART_SendLine("Stage 3/5: reading identity registers");
   URM09_ReportIdentity(current_addr);
 
+  UART_SendLine("Stage 4/5: enter new URM09 address");
   UART_PromptAddress("New URM09 address: ", 0U, &new_addr);
 
   if (new_addr == current_addr)
   {
-    UART_SendString("New address is the same as the current address. No change made.\r\n");
+    UART_SendLine("New address is the same as the current address.");
+    UART_SendLine("No change made.");
     while (1)
     {
       HAL_Delay(1000U);
     }
   }
 
+  UART_SendLine("Stage 5/5: writing new address");
   if (URM09_ModifyAddress(current_addr, new_addr) != HAL_OK)
   {
-    UART_SendString("Failed to write new address.\r\n");
+    UART_SendLine("Failed to write new address.");
     Error_Handler();
   }
 
   HAL_Delay(100U);
 
-  UART_SendString("Verifying new address...\r\n");
-  URM09_ReportIdentity(new_addr);
+  UART_SendLine("Address register updated.");
+  UART_SendLine("Disconnect URM09 from power, then press Enter to verify the new bus address.");
+  UART_SendLine("After power is restored, press Enter here.");
+  URM09_WaitForPowerCycle();
+
+  UART_SendLine("Verifying new address on the I2C bus");
+  found_count = I2C_ScanBus(found_addrs, (uint8_t)(sizeof(found_addrs) / sizeof(found_addrs[0])));
+  UART_ReportFoundAddresses(found_addrs, found_count);
+
+  if (HAL_I2C_IsDeviceReady(&hi2c1, (uint16_t)(new_addr << 1), 2U, 20U) == HAL_OK)
+  {
+    UART_SendString("Success: URM09 moved from 0x");
+    UART_SendHexByte(current_addr);
+    UART_SendString(" to 0x");
+    UART_SendHexByte(new_addr);
+    UART_SendString("\r\n");
+    URM09_ReportIdentity(new_addr);
+  }
+  else
+  {
+    UART_SendString("No device responds at 0x");
+    UART_SendHexByte(new_addr);
+    UART_SendString("\r\n");
+  }
 
   while (1)
   {
@@ -174,6 +222,12 @@ static void UART_SendString(const char *text)
   }
 }
 
+static void UART_SendLine(const char *text)
+{
+  UART_SendString(text);
+  UART_SendString("\r\n");
+}
+
 static void UART_SendHexByte(uint8_t value)
 {
   static const char hex[] = "0123456789ABCDEF";
@@ -207,6 +261,17 @@ static void UART_ReadLine(char *buffer, uint16_t buffer_size)
     if (ch == '\r' || ch == '\n')
     {
       UART_SendString("\r\n");
+
+      if (ch == '\r' && (USART2->SR & USART_SR_RXNE) != 0U)
+      {
+        volatile uint8_t discard = (uint8_t)(USART2->DR & 0xFFU);
+
+        if (discard != (uint8_t)'\n')
+        {
+          /* If the terminal sent a single CR, keep the extra byte consumed. */
+        }
+      }
+
       break;
     }
 
@@ -225,6 +290,15 @@ static void UART_ReadLine(char *buffer, uint16_t buffer_size)
   }
 
   buffer[index] = '\0';
+}
+
+static void UART_FlushRx(void)
+{
+  while ((USART2->SR & USART_SR_RXNE) != 0U)
+  {
+    volatile uint8_t discard = (uint8_t)(USART2->DR & 0xFFU);
+    (void)discard;
+  }
 }
 
 static uint8_t ParseAddress(const char *text, uint8_t *addr_out)
@@ -286,14 +360,19 @@ static void UART_PromptAddress(const char *prompt, uint8_t default_addr, uint8_t
   }
 }
 
-static void I2C_ScanBus(void)
+static uint8_t I2C_ScanBus(uint8_t *found_addrs, uint8_t max_found)
 {
   uint8_t any = 0U;
+  uint8_t count = 0U;
 
   for (uint8_t addr = 0x08U; addr <= 0x77U; ++addr)
   {
     if (HAL_I2C_IsDeviceReady(&hi2c1, (uint16_t)(addr << 1), 2U, 20U) == HAL_OK)
     {
+      if (count < max_found)
+      {
+        found_addrs[count++] = addr;
+      }
       UART_SendString("0x");
       UART_SendHexByte(addr);
       UART_SendString(" ");
@@ -306,6 +385,25 @@ static void I2C_ScanBus(void)
     UART_SendString("none");
   }
 
+  UART_SendString("\r\n");
+  return count;
+}
+
+static void UART_ReportFoundAddresses(const uint8_t *found_addrs, uint8_t found_count)
+{
+  if (found_count == 0U)
+  {
+    UART_SendLine("No I2C devices found after power-cycle.");
+    return;
+  }
+
+  UART_SendString("I2C devices after power-cycle: ");
+  for (uint8_t i = 0U; i < found_count; ++i)
+  {
+    UART_SendString("0x");
+    UART_SendHexByte(found_addrs[i]);
+    UART_SendString(" ");
+  }
   UART_SendString("\r\n");
 }
 
@@ -372,6 +470,14 @@ static void URM09_ReportIdentity(uint8_t addr)
 static HAL_StatusTypeDef URM09_ModifyAddress(uint8_t current_addr, uint8_t new_addr)
 {
   return URM09_WriteReg(current_addr, 0x00U, new_addr);
+}
+
+static void URM09_WaitForPowerCycle(void)
+{
+  char line[8];
+
+  UART_FlushRx();
+  UART_ReadLine(line, sizeof(line));
 }
 
 static void Error_Handler(void)

@@ -119,6 +119,72 @@
       "problemMatcher": []
     },
     {
+      "label": "PIO: Build grove_lcd_dual_urm09",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "grove_lcd_dual_urm09"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Grove LCD + 2x URM09: Build + Upload + Monitor",
+      "dependsOn": [
+        "PIO: Build grove_lcd_dual_urm09",
+        "PIO: Upload grove_lcd_dual_urm09",
+        "PIO: Monitor grove_lcd_dual_urm09"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Upload grove_lcd_dual_urm09",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "grove_lcd_dual_urm09", "-t", "upload"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Monitor grove_lcd_dual_urm09",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["device", "monitor", "-b", "115200", "-p", "/dev/tty.usbserial-0001"],
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Build urm09_fast_log",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "urm09_fast_log"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "URM09 Fast Log: Build + Upload + Monitor",
+      "dependsOn": [
+        "PIO: Build urm09_fast_log",
+        "PIO: Upload urm09_fast_log",
+        "PIO: Monitor urm09_fast_log"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Upload urm09_fast_log",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "urm09_fast_log", "-t", "upload"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Monitor urm09_fast_log",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["device", "monitor", "-b", "115200", "-p", "/dev/tty.usbserial-0001"],
+      "problemMatcher": []
+    },
+    {
       "label": "PIO: Build urm09_addr_tool",
       "type": "shell",
       "command": "~/.platformio/penv/bin/pio",
