@@ -1,0 +1,85 @@
+This directory is intended for PlatformIO Test Runner and project tests.
+
+## Cel
+
+W tym projekcie katalog `test/` służy do prostych testów sprzętowych dla
+`genericSTM32F103RB`. Aktualnie główny test w kodzie polega na wysyłaniu danych
+przez `USART2` i sprawdzeniu ich w monitorze szeregowym.
+
+## Test UART
+
+- target board: `genericSTM32F103RB`
+- interfejs: `USART2`
+- linia TX: `PA2`
+- linia RX: `PA3` nie jest używana
+- tryb transmisji: polling na rejestrach `USART2`
+- parametry transmisji: `115200 8N1`
+
+### Uruchomienie monitora
+
+```bash
+~/.platformio/penv/bin/pio device monitor -b 115200 -p /dev/tty.usbserial-0001
+```
+
+### Oczekiwany wynik
+
+Po starcie układ powinien wysłać:
+
+- `!`
+- `BOOT`
+- jednorazowo `Helo Word`
+- potem kolejne aktywne piny LED, po jednym na linię
+
+Między kolejnymi komunikatami LED jest przerwa około 3 sekund.
+W tym samym rytmie LED zapalają się sekwencyjnie, tak że świeci tylko jedna:
+`LED1 -> LED2 -> LED3 -> LED4 -> LED1 -> ...`
+
+## Uwagi
+
+- Monitor musi być ustawiony na ten sam port, który jest wpisany w
+  `platformio.ini` jako `monitor_port`.
+- Jeśli nic nie pojawia się w terminalu, sprawdź:
+  - poprawność podłączenia ST-Link / konwertera USB-UART,
+  - zgodność baud rate,
+  - czy projekt został poprawnie wgrany na płytkę.
+
+## LED na płytce
+
+Na podstawie oznaczeń widocznych na płytce:
+
+| LED | Pin MCU | Port GPIO |
+| --- | --- | --- |
+| LED1 | PA5 | `GPIOA` pin 5 |
+| LED2 | PC9 | `GPIOC` pin 9 |
+| LED3 | PC8 | `GPIOC` pin 8 |
+| LED4 | PC5 | `GPIOC` pin 5 |
+
+### Mapowanie fizyczne
+
+Układ na płytce:
+
+| A | B | C | D |
+| --- | --- | --- | --- |
+| PC5 | PC8 | PC9 | PA5 |
+| LED4 | LED3 | LED2 | LED1 |
+
+### Sterowanie w HAL
+
+LED2-LED4 są podłączone bezpośrednio do `GPIOC`, więc można je przełączać tak:
+
+```c
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_SET); // LED4 ON
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET); // LED3 ON
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET); // LED2 ON
+```
+
+### Uwaga
+
+Na klasycznych płytkach Nucleo zwykle są 3 user LED (`LD1`-`LD3`), więc układ
+`LED1`-`LED4` wygląda raczej na shield / nakładkę albo inną płytkę testową.
+
+## Dokumentacja PlatformIO
+
+Więcej informacji o testach jednostkowych w PlatformIO:
+
+- https://docs.platformio.org/en/latest/advanced/unit-testing/index.html

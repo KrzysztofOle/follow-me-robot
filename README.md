@@ -1,17 +1,47 @@
 
 
 Sprzęt ktury aktualnie mam:
-Nvidia Jetson Nano Dev Kit
+
+Tymczasowo:
+        Plytka oznaczona: Xnucleo F103RB (mbed ARM Cortex-M3)
+        Procesor: STM32F103RBT6
+                Cecha           Wartość
+                🧠 CPU          Cortex-M3
+                ⏱️ Clock         72 MHz
+                💾 Flash        128 KB
+                🧮 RAM          20 KB
+                🔌 GPIO         ~51
+                📡 I2C          2x
+                📡 SPI          2x
+        📡 UART         3x
+        🔌 USB          FS (device)
+
+Test komunikacji UART dla STM32F103RB:
+- firmware w `stm32_f103_project/src/main.c`
+- używany interfejs: `USART2`
+- linie: `PA2` (TX), `PA3` (RX, niewykorzystywany)
+- TX działa przez polling na rejestrach `USART2`
+- parametry: `115200 8N1`
+- monitor: `~/.platformio/penv/bin/pio device monitor -b 115200 -p /dev/tty.usbserial-0001`
+
+LED na płytce testowej:
+- `LED4` -> `PC5`
+- `LED3` -> `PC8`
+- `LED2` -> `PC9`
+- `LED1` -> `PA5`
+
+Docelowo: STM32 NUCLEO-H755ZI-Q - STM32H755ZIT6 ARM Cortex M7/M4
+
+
+Jednosta centralna AI: Nvidia Jetson Nano Dev Kit
 
 
 Czujniki:
 2 x VL53L8
-3 x URM09 (I2C)
+6 x URM09 (I2C)
 
 AESC / VESC
 Autoro Dual V6 (AESC / VESC 6.7)
-
-
 
 
 2️⃣ Jetson Nano Dev Kit B01 (najczęściej spotykana) - chyba ta ? ? TODO: Sprawdzic
