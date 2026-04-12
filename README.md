@@ -41,6 +41,8 @@ VS Code:
 - `Terminal -> Run Task` i wybierz `PIO: Build uart_led`, `PIO: Upload uart_led`,
   `PIO: Monitor uart_led`, `PIO: Build i2c_scan`, `PIO: Upload i2c_scan` albo
   `PIO: Monitor i2c_scan`
+- są też taski 3 w 1: `UART LED: Build + Upload + Monitor` oraz
+  `I2C Scan: Build + Upload + Monitor`
 
 Docelowo: STM32 NUCLEO-H755ZI-Q - STM32H755ZIT6 ARM Cortex M7/M4
 

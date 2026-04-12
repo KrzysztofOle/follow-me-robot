@@ -10,6 +10,16 @@
       "problemMatcher": []
     },
     {
+      "label": "UART LED: Build + Upload + Monitor",
+      "dependsOn": [
+        "PIO: Build uart_led",
+        "PIO: Upload uart_led",
+        "PIO: Monitor uart_led"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
       "label": "PIO: Upload uart_led",
       "type": "shell",
       "command": "~/.platformio/penv/bin/pio",
@@ -30,6 +40,16 @@
       "command": "~/.platformio/penv/bin/pio",
       "args": ["run", "-e", "i2c_scan"],
       "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "I2C Scan: Build + Upload + Monitor",
+      "dependsOn": [
+        "PIO: Build i2c_scan",
+        "PIO: Upload i2c_scan",
+        "PIO: Monitor i2c_scan"
+      ],
+      "dependsOrder": "sequence",
       "problemMatcher": []
     },
     {
