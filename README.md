@@ -49,6 +49,7 @@ Test LCD + Sensor:
 - adres LCD: `0x3E`
 - adres czujnika: `0x11`
 - linie: `PB8` (SCL), `PB9` (SDA)
+- LCD pokazuje dystans i temperaturę z URM09
 
 VS Code:
 - `Terminal -> Run Task` i wybierz `PIO: Build uart_led`, `PIO: Upload uart_led`,

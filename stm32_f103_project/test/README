@@ -74,14 +74,14 @@ Po starcie LCD powinien wyczyścić ekran i pokazać:
 - adres LCD: `0x3E`
 - adres czujnika: `0x11`
 - linie: `PB8` (SCL), `PB9` (SDA)
-- cel: potwierdzić działanie LCD i obecność czujnika na tej samej magistrali
+- cel: pokazać na LCD odczyt dystansu i temperatury z URM09
 
 ### Oczekiwany wynik
 
 LCD powinien pokazywać:
 
-- `Grove LCD OK`
-- `Sensor 0x11 OK` albo `Sensor 0x11 ERR`
+- `Dist: ... cm`
+- `Temp: ... C`
 
 ## Uwagi
 
