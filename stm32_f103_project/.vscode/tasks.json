@@ -86,6 +86,39 @@
       "problemMatcher": []
     },
     {
+      "label": "PIO: Build grove_lcd_sensor",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "grove_lcd_sensor"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Grove LCD + Sensor: Build + Upload + Monitor",
+      "dependsOn": [
+        "PIO: Build grove_lcd_sensor",
+        "PIO: Upload grove_lcd_sensor",
+        "PIO: Monitor grove_lcd_sensor"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Upload grove_lcd_sensor",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "grove_lcd_sensor", "-t", "upload"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Monitor grove_lcd_sensor",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["device", "monitor", "-b", "115200", "-p", "/dev/tty.usbserial-0001"],
+      "problemMatcher": []
+    },
+    {
       "label": "PIO: Upload i2c_scan",
       "type": "shell",
       "command": "~/.platformio/penv/bin/pio",

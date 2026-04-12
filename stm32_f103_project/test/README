@@ -67,6 +67,22 @@ Po starcie LCD powinien wyczyścić ekran i pokazać:
 - `Hello`
 - `Grove LCD 16x2`
 
+## Test LCD + Sensor
+
+- env: `grove_lcd_sensor`
+- interfejs: `I2C1`
+- adres LCD: `0x3E`
+- adres czujnika: `0x11`
+- linie: `PB8` (SCL), `PB9` (SDA)
+- cel: potwierdzić działanie LCD i obecność czujnika na tej samej magistrali
+
+### Oczekiwany wynik
+
+LCD powinien pokazywać:
+
+- `Grove LCD OK`
+- `Sensor 0x11 OK` albo `Sensor 0x11 ERR`
+
 ## Uwagi
 
 - Monitor musi być ustawiony na ten sam port, który jest wpisany w
