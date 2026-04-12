@@ -1,17 +1,109 @@
 
 
 Sprzęt ktury aktualnie mam:
-Nvidia Jetson Nano Dev Kit
+
+Tymczasowo:
+        Plytka oznaczona: Xnucleo F103RB (mbed ARM Cortex-M3)
+        Procesor: STM32F103RBT6
+                Cecha           Wartość
+                🧠 CPU          Cortex-M3
+                ⏱️ Clock         72 MHz
+                💾 Flash        128 KB
+                🧮 RAM          20 KB
+                🔌 GPIO         ~51
+                📡 I2C          2x
+                📡 SPI          2x
+        📡 UART         3x
+        🔌 USB          FS (device)
+
+Test komunikacji UART dla STM32F103RB:
+- firmware w `stm32_f103_project/src/tests/uart_led/main.c`
+- env: `uart_led`
+- używany interfejs: `USART2`
+- linie: `PA2` (TX), `PA3` (RX, niewykorzystywany)
+- TX działa przez polling na rejestrach `USART2`
+- parametry: `115200 8N1`
+- monitor: `~/.platformio/penv/bin/pio device monitor -b 115200 -p /dev/tty.usbserial-0001`
+
+LED na płytce testowej:
+- `LED4` -> `PC5`
+- `LED3` -> `PC8`
+- `LED2` -> `PC9`
+- `LED1` -> `PA5`
+
+Test I2C:
+- firmware w `stm32_f103_project/src/tests/i2c/main.c`
+- env: `i2c_scan`
+- magistrala: `I2C1`
+- linie: `PB8` (SCL), `PB9` (SDA)
+
+Test LCD:
+- firmware w `stm32_f103_project/src/tests/grove_lcd/main.c`
+- env: `grove_lcd`
+- adres LCD: `0x3E`
+- linie: `PB8` (SCL), `PB9` (SDA)
+
+Test LCD + Sensor:
+- firmware w `stm32_f103_project/src/tests/grove_lcd_sensor/main.c`
+- env: `grove_lcd_sensor`
+- adres LCD: `0x3E`
+- adres czujnika: `0x13`
+- linie: `PB8` (SCL), `PB9` (SDA)
+- LCD pokazuje dystans i temperaturę z URM09
+- zoptymalizowane pod szybkość: I2C 400 kHz, tryb automatyczny, zakres 150 cm
+
+Test LCD + 2x URM09:
+- firmware w `stm32_f103_project/src/tests/grove_lcd_dual_urm09/main.c`
+- env: `grove_lcd_dual_urm09`
+- adres LCD: `0x3E`
+- adres czujników: `0x11` i `0x13`
+- linie: `PB8` (SCL), `PB9` (SDA)
+- LCD pokazuje dane z dwóch URM09 jednocześnie
+
+Fast URM09 log:
+- firmware w `stm32_f103_project/src/tests/urm09_fast_log/main.c`
+- env: `urm09_fast_log`
+- adres czujnika: `0x11`
+- terminal: `USART2` na `115200 8N1`
+- linie: `PB8` (SCL), `PB9` (SDA)
+- program loguje możliwie szybko sam dystans z URM09
+- wyzwala pomiar na jednym czujniku w każdej pętli, ale wypisuje tylko co 6. odczyt, żeby zasymulować rzadszy log przy większej liczbie czujników
+- na starcie pokazuje skan I2C, żeby od razu było widać, co siedzi na magistrali
+
+Zmiana adresu URM09:
+- firmware w `stm32_f103_project/src/tests/urm09_addr_tool/main.c`
+- env: `urm09_addr_tool`
+- interfejs: `I2C1`
+- terminal: `USART2` na `115200 8N1`
+- program sam wykrywa pojedynczy URM09, jeśli to jedyny kandydat na busie
+- po zmianie adresu trzeba odłączyć URM09 od zasilania, a potem po ponownym podłączeniu potwierdzić w terminalu, zanim program sprawdzi nowy adres na busie
+- po potwierdzeniu program robi ponowny skan busa i pokazuje widoczne adresy
+- jeśli nowy adres odpowiada, program sam kończy się komunikatem sukcesu z logiem `stary -> nowy`
+
+VS Code:
+- `Terminal -> Run Task` i wybierz `PIO: Build uart_led`, `PIO: Upload uart_led`,
+  `PIO: Monitor uart_led`, `PIO: Build i2c_scan`, `PIO: Upload i2c_scan` albo
+  `PIO: Monitor i2c_scan`
+- są też taski 3 w 1: `UART LED: Build + Upload + Monitor` oraz
+  `I2C Scan: Build + Upload + Monitor`, `Grove LCD: Build + Upload + Monitor`,
+  `Grove LCD + Sensor: Build + Upload + Monitor`,
+  `Grove LCD + 2x URM09: Build + Upload + Monitor`,
+  `URM09 Fast Log: Build + Upload + Monitor`,
+  `URM09 Addr: Build + Upload + Monitor`
+- debug dla testów znajdziesz w `Run and Debug`
+
+Docelowo: STM32 NUCLEO-H755ZI-Q - STM32H755ZIT6 ARM Cortex M7/M4
+
+
+Jednosta centralna AI: Nvidia Jetson Nano Dev Kit
 
 
 Czujniki:
 2 x VL53L8
-3 x URM09 (I2C)
+6 x URM09 (I2C)
 
 AESC / VESC
 Autoro Dual V6 (AESC / VESC 6.7)
-
-
 
 
 2️⃣ Jetson Nano Dev Kit B01 (najczęściej spotykana) - chyba ta ? ? TODO: Sprawdzic

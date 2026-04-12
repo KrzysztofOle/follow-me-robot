@@ -1,0 +1,236 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "PIO: Build uart_led",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "uart_led"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "UART LED: Build + Upload + Monitor",
+      "dependsOn": [
+        "PIO: Build uart_led",
+        "PIO: Upload uart_led",
+        "PIO: Monitor uart_led"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Upload uart_led",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "uart_led", "-t", "upload"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Monitor uart_led",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["device", "monitor", "-b", "115200", "-p", "/dev/tty.usbserial-0001"],
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Build i2c_scan",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "i2c_scan"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "I2C Scan: Build + Upload + Monitor",
+      "dependsOn": [
+        "PIO: Build i2c_scan",
+        "PIO: Upload i2c_scan",
+        "PIO: Monitor i2c_scan"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Build grove_lcd",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "grove_lcd"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Grove LCD: Build + Upload + Monitor",
+      "dependsOn": [
+        "PIO: Build grove_lcd",
+        "PIO: Upload grove_lcd",
+        "PIO: Monitor grove_lcd"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Upload grove_lcd",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "grove_lcd", "-t", "upload"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Monitor grove_lcd",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["device", "monitor", "-b", "115200", "-p", "/dev/tty.usbserial-0001"],
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Build grove_lcd_sensor",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "grove_lcd_sensor"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Grove LCD + Sensor: Build + Upload + Monitor",
+      "dependsOn": [
+        "PIO: Build grove_lcd_sensor",
+        "PIO: Upload grove_lcd_sensor",
+        "PIO: Monitor grove_lcd_sensor"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Upload grove_lcd_sensor",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "grove_lcd_sensor", "-t", "upload"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Monitor grove_lcd_sensor",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["device", "monitor", "-b", "115200", "-p", "/dev/tty.usbserial-0001"],
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Build grove_lcd_dual_urm09",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "grove_lcd_dual_urm09"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "Grove LCD + 2x URM09: Build + Upload + Monitor",
+      "dependsOn": [
+        "PIO: Build grove_lcd_dual_urm09",
+        "PIO: Upload grove_lcd_dual_urm09",
+        "PIO: Monitor grove_lcd_dual_urm09"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Upload grove_lcd_dual_urm09",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "grove_lcd_dual_urm09", "-t", "upload"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Monitor grove_lcd_dual_urm09",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["device", "monitor", "-b", "115200", "-p", "/dev/tty.usbserial-0001"],
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Build urm09_fast_log",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "urm09_fast_log"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "URM09 Fast Log: Build + Upload + Monitor",
+      "dependsOn": [
+        "PIO: Build urm09_fast_log",
+        "PIO: Upload urm09_fast_log",
+        "PIO: Monitor urm09_fast_log"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Upload urm09_fast_log",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "urm09_fast_log", "-t", "upload"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Monitor urm09_fast_log",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["device", "monitor", "-b", "115200", "-p", "/dev/tty.usbserial-0001"],
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Build urm09_addr_tool",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "urm09_addr_tool"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "URM09 Addr: Build + Upload + Monitor",
+      "dependsOn": [
+        "PIO: Build urm09_addr_tool",
+        "PIO: Upload urm09_addr_tool",
+        "PIO: Monitor urm09_addr_tool"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Upload urm09_addr_tool",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "urm09_addr_tool", "-t", "upload"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Monitor urm09_addr_tool",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["device", "monitor", "-b", "115200", "-p", "/dev/tty.usbserial-0001"],
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Upload i2c_scan",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "i2c_scan", "-t", "upload"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Monitor i2c_scan",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["device", "monitor", "-b", "115200", "-p", "/dev/tty.usbserial-0001"],
+      "problemMatcher": []
+    }
+  ]
+}

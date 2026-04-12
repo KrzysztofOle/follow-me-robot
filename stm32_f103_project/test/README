@@ -1,0 +1,205 @@
+This directory is intended for PlatformIO Test Runner and project tests.
+
+## Cel
+
+W tym projekcie katalog `src/tests/` zawiera kilka niezależnych programów
+testowych dla `genericSTM32F103RB`. Każdy test ma osobny `env` w
+`platformio.ini`.
+
+## Test UART
+
+- env: `uart_led`
+- interfejs: `USART2`
+- linia TX: `PA2`
+- linia RX: `PA3` nie jest używana
+- tryb transmisji: polling na rejestrach `USART2`
+- parametry transmisji: `115200 8N1`
+
+### Uruchomienie monitora
+
+```bash
+~/.platformio/penv/bin/pio device monitor -b 115200 -p /dev/tty.usbserial-0001
+```
+
+### Oczekiwany wynik
+
+Po starcie układ powinien wysłać:
+
+- `!`
+- `BOOT`
+- jednorazowo `Helo Word`
+- potem kolejne aktywne piny LED, po jednym na linię
+
+Między kolejnymi komunikatami LED jest przerwa około 3 sekund.
+W tym samym rytmie LED zapalają się sekwencyjnie, tak że świeci tylko jedna:
+`LED1 -> LED2 -> LED3 -> LED4 -> LED1 -> ...`
+
+## Test I2C
+
+- env: `i2c_scan`
+- interfejs: `I2C1`
+- linie: `PB8` (SCL), `PB9` (SDA)
+- tryb transmisji: `HAL_I2C_IsDeviceReady`
+- prędkość: `100 kHz`
+
+### Oczekiwany wynik
+
+Po starcie układ powinien cyklicznie wypisywać:
+
+- `I2C scan start`
+- `Scan: ...`
+
+Jeśli na magistrali są urządzenia, zobaczysz ich adresy w formacie `0xXX`.
+Jeśli nic nie odpowiada, pojawi się `none`.
+
+## Test LCD
+
+- env: `grove_lcd`
+- interfejs: `I2C1`
+- adres LCD: `0x3E`
+- linie: `PB8` (SCL), `PB9` (SDA)
+- cel: uruchomić sam wyświetlacz i wypisać tekst testowy
+
+### Oczekiwany wynik
+
+Po starcie LCD powinien wyczyścić ekran i pokazać:
+
+- `Hello`
+- `Grove LCD 16x2`
+
+## Test LCD + Sensor
+
+- env: `grove_lcd_sensor`
+- interfejs: `I2C1`
+- adres LCD: `0x3E`
+- adres czujnika: `0x13`
+- linie: `PB8` (SCL), `PB9` (SDA)
+- cel: pokazać na LCD odczyt dystansu i temperatury z URM09
+- tryb pracy: automatyczny, zakres 150 cm, I2C 400 kHz
+
+### Oczekiwany wynik
+
+LCD powinien pokazywać:
+
+- `Dist: ... cm`
+- `Temp: ... C`
+
+To jest obecnie najszybsza wersja tego testu. Program:
+
+- czyta dystans i temperaturę jednym odczytem I2C z rejestrów URM09
+- nie wyzwala osobnego pomiaru w każdej iteracji
+- odświeża LCD możliwie szybko, bez zbędnych opóźnień
+
+## Test LCD + 2x URM09
+
+- env: `grove_lcd_dual_urm09`
+- interfejs: `I2C1`
+- adres LCD: `0x3E`
+- adres lewego czujnika: `0x11`
+- adres prawego czujnika: `0x13`
+- linie: `PB8` (SCL), `PB9` (SDA)
+- cel: pokazać dane z dwóch URM09 jednocześnie
+
+### Oczekiwany wynik
+
+LCD pokazuje dwa wiersze:
+
+- `11 D... T...`
+- `13 D... T...`
+
+Jeśli któryś z czujników nie odpowiada, na jego linii pojawi się `ERR`.
+
+## Fast URM09 log
+
+- env: `urm09_fast_log`
+- interfejs: `I2C1`
+- adres czujnika: `0x11`
+- terminal: `USART2` na `115200 8N1`
+- linie I2C: `PB8` (SCL), `PB9` (SDA)
+- cel: jak najszybciej logować sam dystans z URM09 na terminal
+- program wyzwala pomiar na jednym czujniku w każdej pętli, ale wypisuje tylko co 6. odczyt
+- na starcie pokazuje też skan magistrali I2C
+
+### Oczekiwany wynik
+
+Na terminalu lecą kolejne linie w formacie:
+
+- `123 cm`
+- `124 cm`
+- `122 cm`
+
+To jest lżejszy test niż LCD i nadaje się do sprawdzenia maksymalnej szybkości odczytu sensora.
+
+## Zmiana adresu URM09
+
+- env: `urm09_addr_tool`
+- interfejs: `I2C1`
+- terminal: `USART2` na `115200 8N1`
+- cel: wyszukać URM09, potwierdzić tożsamość i zmienić adres I2C
+
+### Oczekiwany przebieg
+
+1. program skanuje magistralę I2C i wypisuje znalezione urządzenia
+2. jeśli znajdzie dokładnie jedno urządzenie I2C, program bierze je automatycznie
+3. jeśli jest zero albo kilka urządzeń, prosisz o ręczny adres
+4. na terminalu podajesz nowy adres, np. `0x12`
+5. program zapisuje nowy adres do URM09
+6. program prosi o odłączenie zasilania czujnika
+7. po ponownym podłączeniu zasilania i wciśnięciu Enter program weryfikuje odpowiedź na nowym adresie
+
+Na początku programu pojawią się też krótkie komunikaty etapów,
+żeby było widać, na czym program aktualnie stoi.
+Po potwierdzeniu program robi też ponowne skanowanie I2C i pokazuje,
+jakie adresy są widoczne po restarcie sensora.
+Jeśli nowy adres odpowiada, program sam wypisze komunikat sukcesu
+z logiem `stary -> nowy`.
+
+## Uwagi
+
+- Monitor musi być ustawiony na ten sam port, który jest wpisany w
+  `platformio.ini` jako `monitor_port`.
+- Jeśli nic nie pojawia się w terminalu, sprawdź:
+  - poprawność podłączenia ST-Link / konwertera USB-UART,
+  - zgodność baud rate,
+  - czy projekt został poprawnie wgrany na płytkę.
+
+## LED na płytce
+
+Na podstawie oznaczeń widocznych na płytce:
+
+| LED | Pin MCU | Port GPIO |
+| --- | --- | --- |
+| LED1 | PA5 | `GPIOA` pin 5 |
+| LED2 | PC9 | `GPIOC` pin 9 |
+| LED3 | PC8 | `GPIOC` pin 8 |
+| LED4 | PC5 | `GPIOC` pin 5 |
+
+### Mapowanie fizyczne
+
+Układ na płytce:
+
+| A | B | C | D |
+| --- | --- | --- | --- |
+| PC5 | PC8 | PC9 | PA5 |
+| LED4 | LED3 | LED2 | LED1 |
+
+### Sterowanie w HAL
+
+LED2-LED4 są podłączone bezpośrednio do `GPIOC`, więc można je przełączać tak:
+
+```c
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_5, GPIO_PIN_SET); // LED4 ON
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_8, GPIO_PIN_SET); // LED3 ON
+HAL_GPIO_WritePin(GPIOC, GPIO_PIN_9, GPIO_PIN_SET); // LED2 ON
+```
+
+### Uwaga
+
+Na klasycznych płytkach Nucleo zwykle są 3 user LED (`LD1`-`LD3`), więc układ
+`LED1`-`LED4` wygląda raczej na shield / nakładkę albo inną płytkę testową.
+
+## Dokumentacja PlatformIO
+
+Więcej informacji o testach jednostkowych w PlatformIO:
+
+- https://docs.platformio.org/en/latest/advanced/unit-testing/index.html
