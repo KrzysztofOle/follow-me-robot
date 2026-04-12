@@ -38,7 +38,7 @@ W tym samym rytmie LED zapalają się sekwencyjnie, tak że świeci tylko jedna:
 
 - env: `i2c_scan`
 - interfejs: `I2C1`
-- linie: `PB6` (SCL), `PB7` (SDA)
+- linie: `PB8` (SCL), `PB9` (SDA)
 - tryb transmisji: `HAL_I2C_IsDeviceReady`
 - prędkość: `100 kHz`
 
@@ -51,6 +51,21 @@ Po starcie układ powinien cyklicznie wypisywać:
 
 Jeśli na magistrali są urządzenia, zobaczysz ich adresy w formacie `0xXX`.
 Jeśli nic nie odpowiada, pojawi się `none`.
+
+## Test LCD
+
+- env: `grove_lcd`
+- interfejs: `I2C1`
+- adres LCD: `0x3E`
+- linie: `PB8` (SCL), `PB9` (SDA)
+- cel: uruchomić sam wyświetlacz i wypisać tekst testowy
+
+### Oczekiwany wynik
+
+Po starcie LCD powinien wyczyścić ekran i pokazać:
+
+- `Hello`
+- `Grove LCD 16x2`
 
 ## Uwagi
 

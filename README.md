@@ -35,14 +35,21 @@ Test I2C:
 - firmware w `stm32_f103_project/src/tests/i2c/main.c`
 - env: `i2c_scan`
 - magistrala: `I2C1`
-- linie: `PB6` (SCL), `PB7` (SDA)
+- linie: `PB8` (SCL), `PB9` (SDA)
+
+Test LCD:
+- firmware w `stm32_f103_project/src/tests/grove_lcd/main.c`
+- env: `grove_lcd`
+- adres LCD: `0x3E`
+- linie: `PB8` (SCL), `PB9` (SDA)
 
 VS Code:
 - `Terminal -> Run Task` i wybierz `PIO: Build uart_led`, `PIO: Upload uart_led`,
   `PIO: Monitor uart_led`, `PIO: Build i2c_scan`, `PIO: Upload i2c_scan` albo
   `PIO: Monitor i2c_scan`
 - są też taski 3 w 1: `UART LED: Build + Upload + Monitor` oraz
-  `I2C Scan: Build + Upload + Monitor`
+  `I2C Scan: Build + Upload + Monitor`, `Grove LCD: Build + Upload + Monitor`
+- debug dla obu testów znajdziesz w `Run and Debug`
 
 Docelowo: STM32 NUCLEO-H755ZI-Q - STM32H755ZIT6 ARM Cortex M7/M4
 
