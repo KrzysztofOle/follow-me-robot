@@ -2,13 +2,13 @@ This directory is intended for PlatformIO Test Runner and project tests.
 
 ## Cel
 
-W tym projekcie katalog `test/` służy do prostych testów sprzętowych dla
-`genericSTM32F103RB`. Aktualnie główny test w kodzie polega na wysyłaniu danych
-przez `USART2` i sprawdzeniu ich w monitorze szeregowym.
+W tym projekcie katalog `src/tests/` zawiera kilka niezależnych programów
+testowych dla `genericSTM32F103RB`. Każdy test ma osobny `env` w
+`platformio.ini`.
 
 ## Test UART
 
-- target board: `genericSTM32F103RB`
+- env: `uart_led`
 - interfejs: `USART2`
 - linia TX: `PA2`
 - linia RX: `PA3` nie jest używana
@@ -33,6 +33,24 @@ Po starcie układ powinien wysłać:
 Między kolejnymi komunikatami LED jest przerwa około 3 sekund.
 W tym samym rytmie LED zapalają się sekwencyjnie, tak że świeci tylko jedna:
 `LED1 -> LED2 -> LED3 -> LED4 -> LED1 -> ...`
+
+## Test I2C
+
+- env: `i2c_scan`
+- interfejs: `I2C1`
+- linie: `PB6` (SCL), `PB7` (SDA)
+- tryb transmisji: `HAL_I2C_IsDeviceReady`
+- prędkość: `100 kHz`
+
+### Oczekiwany wynik
+
+Po starcie układ powinien cyklicznie wypisywać:
+
+- `I2C scan start`
+- `Scan: ...`
+
+Jeśli na magistrali są urządzenia, zobaczysz ich adresy w formacie `0xXX`.
+Jeśli nic nie odpowiada, pojawi się `none`.
 
 ## Uwagi
 

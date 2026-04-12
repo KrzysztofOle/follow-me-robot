@@ -17,7 +17,8 @@ Tymczasowo:
         🔌 USB          FS (device)
 
 Test komunikacji UART dla STM32F103RB:
-- firmware w `stm32_f103_project/src/main.c`
+- firmware w `stm32_f103_project/src/tests/uart_led/main.c`
+- env: `uart_led`
 - używany interfejs: `USART2`
 - linie: `PA2` (TX), `PA3` (RX, niewykorzystywany)
 - TX działa przez polling na rejestrach `USART2`
@@ -29,6 +30,12 @@ LED na płytce testowej:
 - `LED3` -> `PC8`
 - `LED2` -> `PC9`
 - `LED1` -> `PA5`
+
+Test I2C:
+- firmware w `stm32_f103_project/src/tests/i2c/main.c`
+- env: `i2c_scan`
+- magistrala: `I2C1`
+- linie: `PB6` (SCL), `PB7` (SDA)
 
 Docelowo: STM32 NUCLEO-H755ZI-Q - STM32H755ZIT6 ARM Cortex M7/M4
 
