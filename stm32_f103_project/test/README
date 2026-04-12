@@ -83,6 +83,21 @@ LCD powinien pokazywać:
 - `Dist: ... cm`
 - `Temp: ... C`
 
+## Zmiana adresu URM09
+
+- env: `urm09_addr_tool`
+- interfejs: `I2C1`
+- terminal: `USART2` na `115200 8N1`
+- cel: wyszukać URM09, potwierdzić tożsamość i zmienić adres I2C
+
+### Oczekiwany przebieg
+
+1. program skanuje magistralę I2C i wypisuje znalezione urządzenia
+2. program odczytuje rejestry identyfikacyjne URM09
+3. na terminalu podajesz nowy adres, np. `0x12`
+4. program zapisuje nowy adres do URM09
+5. program weryfikuje odpowiedź na nowym adresie
+
 ## Uwagi
 
 - Monitor musi być ustawiony na ten sam port, który jest wpisany w

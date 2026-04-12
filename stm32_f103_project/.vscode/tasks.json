@@ -119,6 +119,39 @@
       "problemMatcher": []
     },
     {
+      "label": "PIO: Build urm09_addr_tool",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "urm09_addr_tool"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "URM09 Addr: Build + Upload + Monitor",
+      "dependsOn": [
+        "PIO: Build urm09_addr_tool",
+        "PIO: Upload urm09_addr_tool",
+        "PIO: Monitor urm09_addr_tool"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Upload urm09_addr_tool",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "urm09_addr_tool", "-t", "upload"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Monitor urm09_addr_tool",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["device", "monitor", "-b", "115200", "-p", "/dev/tty.usbserial-0001"],
+      "problemMatcher": []
+    },
+    {
       "label": "PIO: Upload i2c_scan",
       "type": "shell",
       "command": "~/.platformio/penv/bin/pio",

@@ -51,13 +51,19 @@ Test LCD + Sensor:
 - linie: `PB8` (SCL), `PB9` (SDA)
 - LCD pokazuje dystans i temperaturę z URM09
 
+Zmiana adresu URM09:
+- firmware w `stm32_f103_project/src/tests/urm09_addr_tool/main.c`
+- env: `urm09_addr_tool`
+- interfejs: `I2C1`
+- terminal: `USART2` na `115200 8N1`
+
 VS Code:
 - `Terminal -> Run Task` i wybierz `PIO: Build uart_led`, `PIO: Upload uart_led`,
   `PIO: Monitor uart_led`, `PIO: Build i2c_scan`, `PIO: Upload i2c_scan` albo
   `PIO: Monitor i2c_scan`
 - są też taski 3 w 1: `UART LED: Build + Upload + Monitor` oraz
   `I2C Scan: Build + Upload + Monitor`, `Grove LCD: Build + Upload + Monitor`,
-  `Grove LCD + Sensor: Build + Upload + Monitor`
+  `Grove LCD + Sensor: Build + Upload + Monitor`, `URM09 Addr: Build + Upload + Monitor`
 - debug dla testów znajdziesz w `Run and Debug`
 
 Docelowo: STM32 NUCLEO-H755ZI-Q - STM32H755ZIT6 ARM Cortex M7/M4
