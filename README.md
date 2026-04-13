@@ -16,7 +16,7 @@ Projekt robota mobilnego zdolnego do śledzenia człowieka, z wyraźnym rozdzia�
 
 | Warstwa | Element | Odpowiedzialność |
 | --- | --- | --- |
-| Low-level | STM32 | sensory (I2C), real-time, napęd, bezpieczeństwo |
+| Low-level | STM32 | sensory (I2C i SPI), real-time, napęd, bezpieczeństwo |
 | High-level | Jetson Nano | wizja, AI, logika śledzenia, fuzja danych |
 
 ### 2.2 Komunikacja
