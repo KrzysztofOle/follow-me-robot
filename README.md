@@ -22,7 +22,7 @@ Projekt robota mobilnego zdolnego do śledzenia człowieka, z wyraźnym rozdzia�
 ### 2.2 Komunikacja
 
 - STM32 ↔ Jetson Nano: UART / CAN (planowane)
-- STM32 ↔ czujniki: I2C
+- STM32 ↔ czujniki: I2C i SPI
 
 ## 3. Sprzęt
 
@@ -56,7 +56,7 @@ Projekt robota mobilnego zdolnego do śledzenia człowieka, z wyraźnym rozdzia�
 ### 3.3 Czujniki
 
 - ultradźwiękowe: 6 x URM09 (I2C)
-- ToF: 2 x VL53L8
+- ToF: 2 x VL53L8 (SPI)
 - planowane: kamera RGB / depth
 - IMU
 
