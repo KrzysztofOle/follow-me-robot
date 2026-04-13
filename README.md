@@ -177,3 +177,10 @@ Warstwy:
 ## 9. Status
 
 Projekt w fazie aktywnych testów sprzętowych i architektury systemu.
+
+## 10. Repository structure
+
+- `docs/` – system architecture and interfaces
+- `firmware/` – STM32 firmware projects
+- `ai/` – Jetson Nano software
+
