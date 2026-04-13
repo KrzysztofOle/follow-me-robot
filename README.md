@@ -1,356 +1,179 @@
+# Mobile Human-Following Robot
 
+Projekt robota mobilnego zdolnego do śledzenia człowieka, z wyraźnym rozdziałem na warstwę niskopoziomową (real-time, sensory, napęd) oraz wysokopoziomową (percepcja, AI, decyzje).
 
-Sprzęt ktury aktualnie mam:
+## 1. Cel projektu
 
-Tymczasowo:
-        Plytka oznaczona: Xnucleo F103RB (mbed ARM Cortex-M3)
-        Procesor: STM32F103RBT6
-                Cecha           Wartość
-                🧠 CPU          Cortex-M3
-                ⏱️ Clock         72 MHz
-                💾 Flash        128 KB
-                🧮 RAM          20 KB
-                🔌 GPIO         ~51
-                📡 I2C          2x
-                📡 SPI          2x
-        📡 UART         3x
-        🔌 USB          FS (device)
+- autonomiczny robot kołowy
+- śledzenie człowieka w środowisku indoor
+- nacisk na deterministykę czasu rzeczywistego
+- modularność sprzętu i software'u
+- możliwość rozwoju (ROS, fuzja sensorów)
 
-Test komunikacji UART dla STM32F103RB:
-- firmware w `stm32_f103_project/src/tests/uart_led/main.c`
+## 2. Architektura systemu
+
+### 2.1 Podział odpowiedzialności
+
+| Warstwa | Element | Odpowiedzialność |
+| --- | --- | --- |
+| Low-level | STM32 | sensory (I2C), real-time, napęd, bezpieczeństwo |
+| High-level | Jetson Nano | wizja, AI, logika śledzenia, fuzja danych |
+
+### 2.2 Komunikacja
+
+- STM32 ↔ Jetson Nano: UART / CAN (planowane)
+- STM32 ↔ czujniki: I2C
+
+## 3. Sprzęt
+
+### 3.1 Mikrokontrolery (MCU)
+
+#### Aktualnie (bring-up / testy)
+
+- `NUCLEO-F103RB`
+- MCU: `STM32F103RBT6`
+- CPU: ARM Cortex-M3 @ 72 MHz
+- Flash: 128 KB
+- RAM: 20 KB
+- UART: 3x
+- I2C: 2x
+- SPI: 2x
+
+#### Docelowo
+
+- `NUCLEO-H755ZI-Q`
+- MCU: `STM32H755ZIT6`
+- rdzenie: Cortex-M7 + Cortex-M4
+
+### 3.2 Jednostka AI
+
+- `NVIDIA Jetson Nano Dev Kit B01` (do potwierdzenia)
+- CPU: Quad-core ARM Cortex-A57
+- GPU: Maxwell, 128 CUDA cores
+- RAM: 4 GB
+- interfejsy: 2x CSI, HDMI, DP, GbE
+
+### 3.3 Czujniki
+
+- ultradźwiękowe: 6 x URM09 (I2C)
+- ToF: 2 x VL53L8
+- planowane: kamera RGB / depth
+- IMU
+
+### 3.4 Napęd
+
+- VESC / AESC
+- Autoro Dual V6 (AESC / VESC 6.7)
+
+## 4. Firmware STM32
+
+### 4.1 Organizacja projektu
+
+- środowisko: PlatformIO + VS Code
+- testy podzielone na niezależne aplikacje (`src/tests/...`)
+
+### 4.2 Testy peryferiów
+
+#### UART
+
 - env: `uart_led`
-- używany interfejs: `USART2`
-- linie: `PA2` (TX), `PA3` (RX, niewykorzystywany)
-- TX działa przez polling na rejestrach `USART2`
-- parametry: `115200 8N1`
-- monitor: `~/.platformio/penv/bin/pio device monitor -b 115200 -p /dev/tty.usbserial-0001`
+- USART2: PA2 (TX), PA3 (RX - niewykorzystywany)
+- 115200 8N1
+- test: polling rejestrów + LED
 
-LED na płytce testowej:
-- `LED4` -> `PC5`
-- `LED3` -> `PC8`
-- `LED2` -> `PC9`
-- `LED1` -> `PA5`
+#### LED (NUCLEO-F103RB)
 
-Test I2C:
-- firmware w `stm32_f103_project/src/tests/i2c/main.c`
+- LED4 -> PC5
+- LED3 -> PC8
+- LED2 -> PC9
+- LED1 -> PA5
+
+#### I2C - skan magistrali
+
 - env: `i2c_scan`
-- magistrala: `I2C1`
-- linie: `PB8` (SCL), `PB9` (SDA)
+- I2C1: PB8 (SCL), PB9 (SDA)
 
-Test LCD:
-- firmware w `stm32_f103_project/src/tests/grove_lcd/main.c`
+#### LCD Grove
+
 - env: `grove_lcd`
 - adres LCD: `0x3E`
-- linie: `PB8` (SCL), `PB9` (SDA)
+- I2C1: PB8 / PB9
 
-Test LCD + Sensor:
-- firmware w `stm32_f103_project/src/tests/grove_lcd_sensor/main.c`
+#### LCD + URM09
+
 - env: `grove_lcd_sensor`
-- adres LCD: `0x3E`
-- adres czujnika: `0x13`
-- linie: `PB8` (SCL), `PB9` (SDA)
-- LCD pokazuje dystans i temperaturę z URM09
-- zoptymalizowane pod szybkość: I2C 400 kHz, tryb automatyczny, zakres 150 cm
+- LCD: `0x3E`
+- URM09: `0x13`
+- pomiar dystansu + temperatury
+- I2C 400 kHz
 
-Test LCD + 2x URM09:
-- firmware w `stm32_f103_project/src/tests/grove_lcd_dual_urm09/main.c`
+#### LCD + 2x URM09
+
 - env: `grove_lcd_dual_urm09`
-- adres LCD: `0x3E`
-- adres czujników: `0x11` i `0x13`
-- linie: `PB8` (SCL), `PB9` (SDA)
-- LCD pokazuje dane z dwóch URM09 jednocześnie
+- URM09: `0x11`, `0x13`
 
-Fast URM09 log:
-- firmware w `stm32_f103_project/src/tests/urm09_fast_log/main.c`
+#### URM09 - szybki log
+
 - env: `urm09_fast_log`
-- adres czujnika: `0x11`
-- terminal: `USART2` na `115200 8N1`
-- linie: `PB8` (SCL), `PB9` (SDA)
-- program loguje możliwie szybko sam dystans z URM09
-- wyzwala pomiar na jednym czujniku w każdej pętli, ale wypisuje tylko co 6. odczyt, żeby zasymulować rzadszy log przy większej liczbie czujników
-- na starcie pokazuje skan I2C, żeby od razu było widać, co siedzi na magistrali
+- log dystansu przez USART2
+- skan I2C na starcie
+- symulacja wielu czujników
 
-Zmiana adresu URM09:
-- firmware w `stm32_f103_project/src/tests/urm09_addr_tool/main.c`
+#### Zmiana adresu URM09
+
 - env: `urm09_addr_tool`
-- interfejs: `I2C1`
-- terminal: `USART2` na `115200 8N1`
-- program sam wykrywa pojedynczy URM09, jeśli to jedyny kandydat na busie
-- po zmianie adresu trzeba odłączyć URM09 od zasilania, a potem po ponownym podłączeniu potwierdzić w terminalu, zanim program sprawdzi nowy adres na busie
-- po potwierdzeniu program robi ponowny skan busa i pokazuje widoczne adresy
-- jeśli nowy adres odpowiada, program sam kończy się komunikatem sukcesu z logiem `stary -> nowy`
+- automatyczne wykrywanie pojedynczego czujnika
+- procedura potwierdzenia po power-cycle
 
-VS Code:
-- `Terminal -> Run Task` i wybierz `PIO: Build uart_led`, `PIO: Upload uart_led`,
-  `PIO: Monitor uart_led`, `PIO: Build i2c_scan`, `PIO: Upload i2c_scan` albo
-  `PIO: Monitor i2c_scan`
-- są też taski 3 w 1: `UART LED: Build + Upload + Monitor` oraz
-  `I2C Scan: Build + Upload + Monitor`, `Grove LCD: Build + Upload + Monitor`,
-  `Grove LCD + Sensor: Build + Upload + Monitor`,
-  `Grove LCD + 2x URM09: Build + Upload + Monitor`,
-  `URM09 Fast Log: Build + Upload + Monitor`,
-  `URM09 Addr: Build + Upload + Monitor`
-- debug dla testów znajdziesz w `Run and Debug`
+### 4.3 Workflow VS Code
 
-Docelowo: STM32 NUCLEO-H755ZI-Q - STM32H755ZIT6 ARM Cortex M7/M4
+- Taski: Build
+- Upload
+- Monitor
+- Build + Upload + Monitor
+- Debug dostępny z poziomu Run and Debug
 
+## 5. Software - Jetson Nano
 
-Jednosta centralna AI: Nvidia Jetson Nano Dev Kit
+Planowany stack:
 
+- OS: Ubuntu + JetPack 4.6.x
+- robotyka: ROS (docelowo)
+- wizja: OpenCV
+- YOLO / MediaPipe (light models)
 
-Czujniki:
-2 x VL53L8
-6 x URM09 (I2C)
+## 6. Algorytmy śledzenia człowieka
 
-AESC / VESC
-Autoro Dual V6 (AESC / VESC 6.7)
+Podejście:
 
+- brak pojedynczego czujnika -> fuzja sensorów
 
-2️⃣ Jetson Nano Dev Kit B01 (najczęściej spotykana) - chyba ta ? ? TODO: Sprawdzic
-🔹 Rok: 2020
-🔹 ✅ Najbardziej „standardowa” wersja
-Różnice względem A02:
+Warstwy:
 
-2× CSI (obsługa dwóch kamer)
-Poprawiony layout PCB
-Pełna zgodność pinów GPIO z przyszłymi wersjami
-Nadal 4 GB RAM
+- kamera -> detekcja człowieka (AI)
+- LiDAR / ToF / Ultrasonic -> odległość i bezpieczeństwo
+- IMU -> stabilizacja ruchu
 
-Specyfikacja:
+## 7. Roadmapa
 
-Quad‑core ARM Cortex‑A57
-GPU Maxwell 128 CUDA cores
-HDMI + DisplayPort
-Gigabit Ethernet
+### MVP
 
-INNE NOTATKI:
+- stabilna komunikacja STM32 ↔ Jetson
+- śledzenie człowieka kamerą
+- podstawowe unikanie kolizji
 
-Budowa robota śledzącego człowieka to temat, gdzie **nie ma jednego czujnika – zawsze stosuje się kombinację (tzw. fuzję sensorów)**, żeby uzyskać stabilne śledzenie. ([arXiv][1])
+### Kolejne etapy
 
-Poniżej masz konkretne, praktyczne opcje – od najprostszych do profesjonalnych.
+- ROS
+- fuzja sensorów (EKF / Kalman)
+- rozpoznawanie konkretnej osoby
 
----
+## 8. Notatki badawcze
 
-# 🔧 1. Najprostsze rozwiązania (DIY, tanie)
+- fuzja sensorów w robotach mobilnych
+- śledzenie człowieka bez markerów
+- stabilizacja sterowania (PID, filtracja)
 
-## 📷 Kamera + AI (najlepszy stosunek efekt/koszt)
+## 9. Status
 
-![Image](https://miro.medium.com/v2/resize%3Afit%3A1200/1%2AFYS2PwA2O9fF3MLMGwWlxA.png)
-
-![Image](https://www.mdpi.com/sensors/sensors-19-04943/article_deploy/html/images/sensors-19-04943-g001.png)
-
-![Image](https://content.instructables.com/F32/8KDD/L6M71TSH/F328KDDL6M71TSH.jpg?auto=webp)
-
-![Image](https://www.electronicsforu.com/wp-contents/uploads/2026/01/Screenshot-2026-01-16-at-3.20.41-PM-Large-1024x490.jpeg)
-
-**Jak działa:**
-
-* kamera wykrywa człowieka (np. YOLO, MediaPipe)
-* robot podąża za środkiem sylwetki
-
-**Czego użyć:**
-
-* Raspberry Pi + kamera
-* Python + OpenCV / YOLO / MediaPipe
-
-**Zalety:**
-
-* bardzo dokładne
-* rozpoznaje konkretną osobę (np. kolor, twarz)
-
-**Wady:**
-
-* zależne od światła
-* większe wymagania CPU/GPU
-
-👉 To najczęstsze rozwiązanie w projektach hobbystycznych.
-
----
-
-## 📡 Czujniki ultradźwiękowe (HC-SR04)
-
-![Image](https://abacasstorageaccnt.blob.core.windows.net/cirkit/eb1701e9-7fd1-47c8-b23f-3447ceabc48d.png)
-
-![Image](https://circuitdigest.com/sites/default/files/projectimage_mic/human-following-robot.jpg)
-
-![Image](https://hackster.imgix.net/uploads/attachments/390375/hacksterio_cover_B8wPMKX5c6.jpg?auto=compress%2Cformat\&fit=min\&h=675\&w=900)
-
-**Jak działa:**
-
-* robot mierzy odległość do obiektu przed nim
-* utrzymuje dystans
-
-**Zalety:**
-
-* bardzo tanie
-* proste w implementacji
-
-**Wady:**
-
-* nie rozpoznaje człowieka (tylko przeszkodę)
-* słaba precyzja kierunku
-
-👉 dobre jako **dodatek**, nie jako główny sensor
-
----
-
-## 🔴 IR / śledzenie nadajnika (pilot, beacon)
-
-![Image](https://europe1.discourse-cdn.com/arduino/original/4X/3/8/2/382c4a92624c9198c255e8e1e1ff00717128915d.jpeg)
-
-![Image](https://hacksterio.s3.amazonaws.com/uploads/attachments/1429995/schematic_diagram_ctfUjAnFVL.jpg)
-
-![Image](https://projects.arduinocontent.cc/cover-images/6fb3eace-df78-4064-bc34-ecb7f7a4ce35.png)
-
-**Jak działa:**
-
-* człowiek ma nadajnik IR / BLE / UWB
-* robot śledzi sygnał
-
-**Zalety:**
-
-* działa w ciemności
-* proste sterowanie
-
-**Wady:**
-
-* trzeba nosić nadajnik
-* mniej „inteligentne”
-
----
-
-# ⚙️ 2. Średnio-zaawansowane rozwiązania
-
-## 📡 LiDAR (np. RPLidar)
-
-![Image](https://www.researchgate.net/publication/328883720/figure/fig2/AS%3A1086464792240152%401636044800117/Robot-used-for-implementation-and-test-Equipped-with-a-RPLIDAR-A1-scanner.jpg)
-
-![Image](https://vision.rwth-aachen.de/media/paper_images/212/Screen_Shot_2021-06-22_at_11.56.06_AM.png)
-
-![Image](https://www.researchgate.net/publication/220633576/figure/fig1/AS%3A671529876598789%401537116607128/What-is-Simultaneous-Localization-and-Mapping-SLAM-A-robot-observes-the-environment.png)
-
-**Jak działa:**
-
-* skanuje otoczenie 360°
-* wykrywa sylwetkę jako obiekt ruchomy
-
-**Zalety:**
-
-* działa w ciemności
-* bardzo stabilny pomiar odległości
-
-**Wady:**
-
-* trudniejsza analiza (algorytmy)
-* droższy
-
-👉 często używany w robotach mobilnych
-
----
-
-## 📷 Kamera głębi (Intel RealSense, Kinect)
-
-![Image](https://www.robotshop.com/cdn/shop/files/unitree-g1-intel-depth-camera-realsense-d435i-img_1200x1200.webp?v=1727676187)
-
-![Image](https://www.researchgate.net/publication/282245620/figure/fig1/AS%3A391612397047808%401470379079294/Example-of-skeleton-tracking-with-the-Kinect.png)
-
-![Image](https://scx2.b-cdn.net/gfx/news/hires/2023/a-new-model-that-allow-1.jpg)
-
-**Jak działa:**
-
-* widzi obraz + głębię (3D)
-* śledzi szkielet człowieka
-
-**Zalety:**
-
-* bardzo dokładne śledzenie
-* odporne na tło
-
-**Wady:**
-
-* cena
-* większe zużycie energii
-
-👉 jedno z najlepszych rozwiązań „plug & play”
-
----
-
-# 🚀 3. Profesjonalne / zaawansowane
-
-## 🧠 Fuzja sensorów (najlepsze podejście)
-
-👉 kamera + LiDAR + ultradźwięki + IMU
-
-* kamera → kto to jest
-* LiDAR → gdzie jest
-* ultradźwięki → bezpieczeństwo
-* IMU → stabilizacja ruchu
-
-Takie podejście daje największą dokładność i odporność na błędy ([arXiv][2])
-
----
-
-## 📡 UWB (Ultra Wideband – lokalizacja)
-
-* dokładność do ~10–30 cm
-* tracker na człowieku
-
-👉 bardzo dobre w magazynach / przemyśle
-
----
-
-# 🧠 Jakie rozwiązanie wybrać (praktycznie)
-
-### 🔹 Najlepszy start (Twoje projekty DIY / STM32 / vision):
-
-👉 **kamera + OpenCV + YOLO**
-
-### 🔹 Jeśli chcesz stabilności:
-
-👉 **kamera + ultradźwięki (backup)**
-
-### 🔹 Jeśli chcesz PRO poziom:
-
-👉 **RealSense + ROS + SLAM**
-
----
-
-# 📊 Przykładowa architektura (sprawdzona)
-
-```
-Kamera (YOLO) → wykrycie człowieka
-        ↓
-PID sterowanie → kierunek robota
-        ↓
-Ultradźwięki → zabezpieczenie przed kolizją
-```
-
----
-
-# ⚠️ Najczęstsze błędy
-
-* ❌ tylko ultradźwięki → robot „gubi” człowieka
-* ❌ tylko kamera → problemy przy słabym świetle
-* ❌ brak filtracji → drgania (tu pomaga filtr Kalmana) ([Yadda][3])
-
----
-
-# Jeśli chcesz — mogę dobrać konkretny zestaw pod Twój projekt
-
-Napisz:
-
-* jaki budżet
-* czy robot indoor/outdoor
-* czy chcesz STM32 czy Raspberry Pi
-
-👉 Mogę rozpisać Ci gotową architekturę + konkretne modele czujników i kod startowy.
-
-[1]: https://arxiv.org/abs/1703.04877?utm_source=chatgpt.com "Real-time 3D Human Tracking for Mobile Robots with Multisensors"
-[2]: https://arxiv.org/abs/1801.04137?utm_source=chatgpt.com "Multisensor Online Transfer Learning for 3D LiDAR-based Human Detection with a Mobile Robot"
-[3]: https://yadda.icm.edu.pl/baztech/element/bwmeta1.element.baztech-fbe6dcd9-798c-47a2-a1a4-dd47b119cefc/c/MRR_2018_7_18-25.pdf?utm_source=chatgpt.com "Zastosowanie filtru Kalmana"
-
-
-
-
-
-✅ Najlepszy wybór do projektów i edukacji (jeśli już masz Nano).
+Projekt w fazie aktywnych testów sprzętowych i architektury systemu.
