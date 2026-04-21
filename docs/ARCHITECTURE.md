@@ -30,7 +30,7 @@ System składa się z dwóch głównych domen:
 **Rola:** deterministyczna kontrola robota
 
 Zakres odpowiedzialności:
-- odbiór i interpretacja sygnału RC (PPM / PWM)
+- odbiór i interpretacja sygnału RC (PWM per-channel)
 - obsługa czujników:
   - URM09 (I2C)
   - VL53L8 (SPI)
@@ -128,12 +128,32 @@ Komunikacja M7 ↔ M4:
 
 | Interfejs | Przeznaczenie | Uwagi |
 | --- | --- | --- |
-| PWM / PPM | odbiór kanałów RC | STM32 interpretuje CH1-CH2 i opcjonalne CH3+ |
+| PWM (per-channel) | odbiór kanałów RC | domyślny tryb dla FlySky FS-BS6 |
+| PPM | alternatywnie | wspierane, jeśli użyty jest inny odbiornik |
 
 - CH1 – skręt
 - CH2 – prędkość
-- opcjonalne CH3+ – tryby pracy
+- CH3 – tryb pracy
+- CH4 – E-STOP
 - brak autonomii w Etapie 1
+
+### RC Channel Mapping
+
+| Channel | Function | Range | Notes |
+|--------|-----------|-------|-------|
+| CH1 | Steering | 1000–2000 µs | skręt |
+| CH2 | Throttle | 1000–2000 µs | przód/tył |
+| CH3 | Mode | discrete | tryb pracy |
+| CH4 | E-STOP | binary | opcjonalne |
+
+### Control Priority
+
+1. E-STOP
+2. STOP_OBSTACLE
+3. LIMIT_SPEED
+4. MANUAL_RC
+
+Każdy wyższy poziom nadpisuje niższy.
 
 ---
 

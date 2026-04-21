@@ -22,6 +22,17 @@ Dokument obowiązuje **wszystkie warstwy systemu**, ze szczególnym naciskiem na
 
 ---
 
+## 2.1 Priorytety sterowania
+
+1. E-STOP
+2. STOP_OBSTACLE
+3. LIMIT_SPEED
+4. MANUAL_RC
+
+Każdy wyższy poziom nadpisuje niższy.
+
+---
+
 ## 2. Stany bezpieczeństwa systemu
 
 | Stan | Opis |
@@ -42,7 +53,6 @@ Przejście do **SAFE_STOP** lub **EMERGENCY_STOP** jest możliwe z każdego stan
 
 E‑STOP może zostać wyzwolony przez:
 - wejście sprzętowe (przycisk E‑STOP)
-- failsafe RC / utrata sygnału sterowania
 - watchdog firmware
 - timeout komunikacji z warstwą nadrzędną
 - krytyczny błąd czujnika
@@ -143,9 +153,10 @@ i nie może być wyłączone ani obejście programowe.
 ## 5. Bezpieczeństwo komunikacji
 
 Zgodnie z `PROTOCOL.md`:
+- LOST_SIGNAL: brak aktualizacji PWM > 100 ms lub aktywacja failsafe w odbiorniku RC → SAFE_STOP
 - brak odświeżenia sygnału sterowania → STOP
 - CRC error → ramka odrzucona
-- timeout sygnału sterowania (>200 ms) → SAFE_STOP
+- timeout sygnału sterowania (>100 ms) → SAFE_STOP
 
 ---
 

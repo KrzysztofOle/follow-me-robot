@@ -94,6 +94,43 @@ Celem dokumentu jest:
 - ACTIVE → SAFE_STOP (błąd F2)
 - ACTIVE → EMERGENCY_STOP (błąd F3 / E‑STOP)
 - ACTIVE → IDLE (komenda stop)
+- ACTIVE → SAFE_STOP (LOST_SIGNAL)
+
+### 3.3.1 MANUAL_RC
+
+**Opis:**
+
+- tryb ręcznego sterowania z aparatury RC
+- komendy RC są bazą dla ruchu robota
+- wyższe priorytety mogą nadpisać komendy RC
+
+### 3.3.2 LIMIT_SPEED
+
+**Opis:**
+
+- aktywowany przy średniej odległości przeszkody
+- prędkość wyjściowa jest skalowana względem komendy RC
+- wzór: `speed_out = RC_speed * factor`
+- `factor` konfigurowalne w zakresie `0.2 - 0.5`
+
+### 3.3.3 STOP_OBSTACLE
+
+**Opis:**
+
+- aktywowany przy krytycznie małej odległości przeszkody
+- nadpisuje każdą komendę RC
+- wymusza zatrzymanie robota
+
+### 3.3.4 LOST_SIGNAL
+
+**Opis:**
+
+- brak aktualizacji PWM przez ponad `100 ms`
+- lub aktywacja failsafe w odbiorniku RC
+
+**Reakcja:**
+
+- przejście do `SAFE_STOP`
 
 ---
 

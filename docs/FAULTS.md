@@ -44,7 +44,7 @@ Dokument jest ściśle powiązany z:
 
 ### F2‑COM‑01: Timeout sygnału sterowania RC
 
-- **Opis:** brak aktualizacji kanałów RC w zadanym czasie
+- **Opis:** brak aktualizacji kanałów RC przez ponad 100 ms lub aktywacja failsafe w odbiorniku RC
 - **Wykrycie:** licznik czasu w STM32
 - **Reakcja:** SAFE_STOP
 
