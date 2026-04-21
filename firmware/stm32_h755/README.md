@@ -32,7 +32,7 @@ Jetson Nano pełni wyłącznie rolę:
 ### 2.1 Cortex‑M7 (High‑performance / Control core)
 
 - główna pętla sterowania ruchem
-- komunikacja z Jetson Nano (UART / CAN)
+- komunikacja z Jetson Nano przez Ethernet
 - generowanie komend dla VESC / AESC
 - nadzór bezpieczeństwa
 
@@ -72,8 +72,9 @@ stm32_h755_project/
 
 ## 4. Komunikacja z Jetson Nano
 
-Komunikacja realizowana jest zgodnie z dokumentem:
+Komunikacja realizowana jest zgodnie z dokumentami:
 
+- `../docs/ARCHITECTURE.md`
 - `../docs/PROTOCOL.md`
 
 Zasady:
@@ -81,6 +82,7 @@ Zasady:
 - model publish / subscribe
 - brak ważnej komendy → STOP
 - STM32 ma zawsze priorytet bezpieczeństwa
+- interfejs fizyczny: Ethernet
 
 ---
 

@@ -30,6 +30,8 @@ Główne zadania:
 - realizacja mechanizmów bezpieczeństwa,
 - cykliczna komunikacja z Jetson Nano.
 
+> Uwaga: ten dokument dotyczy projektu bring-up dla **NUCLEO-F103RB**. Nie opisuje finalnego mapowania UART dla **NUCLEO-H755ZI-Q**.
+
 ---
 
 ## 2. Wspierany hardware
@@ -74,7 +76,7 @@ firmware/
 
 Komunikacja odbywa się zgodnie z dokumentem:
 
-- `../docs/PROTOCOL.m`
+- `../docs/PROTOCOL.md`
 
 Zasady:
 

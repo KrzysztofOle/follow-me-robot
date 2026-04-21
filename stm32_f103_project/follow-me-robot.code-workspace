@@ -1,0 +1,13 @@
+{
+	"folders": [
+		{
+			"name": "follow-me-robot",
+			"path": ".."
+		},
+		{
+			"name": "stm32_f103_project",
+			"path": "."
+		}
+	],
+	"settings": {}
+}

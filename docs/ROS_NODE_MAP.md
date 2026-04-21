@@ -122,8 +122,7 @@ ROS w projekcie dzieli się na cztery warstwy:
 
 **Komunikacja fizyczna:**
 
-- UART (MVP)
-- CAN (docelowo)
+- Ethernet (MVP)
 
 > Jest to **jedyny węzeł**, który komunikuje się ze STM32.
 
