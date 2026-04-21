@@ -1,11 +1,11 @@
 # Mobile Human-Following Robot
 
-Projekt robota mobilnego zdolnego do śledzenia człowieka, z wyraźnym rozdziałem na warstwę niskopoziomową (real-time, sensory, napęd) oraz wysokopoziomową (percepcja, AI, decyzje).
+Projekt robota mobilnego z etapową rozbudową: od ręcznego sterowania RC i bezpieczeństwa na STM32 do późniejszego śledzenia człowieka, z wyraźnym rozdziałem na warstwę niskopoziomową (real-time, sensory, napęd) oraz wysokopoziomową (percepcja, AI, decyzje).
 
 ## 1. Cel projektu
 
-- autonomiczny robot kołowy
-- śledzenie człowieka w środowisku indoor
+- robot mobilny sterowany RC w Etapie 1
+- śledzenie człowieka w środowisku indoor w kolejnych etapach
 - nacisk na deterministykę czasu rzeczywistego
 - modularność sprzętu i software'u
 - możliwość rozwoju (ROS, fuzja sensorów)
@@ -16,13 +16,18 @@ Projekt robota mobilnego zdolnego do śledzenia człowieka, z wyraźnym rozdzia�
 
 | Warstwa | Element | Odpowiedzialność |
 | --- | --- | --- |
-| Low-level | STM32 | sensory (I2C i SPI), real-time, napęd, bezpieczeństwo |
+| Low-level | STM32 | sensory (I2C i SPI), odczyt RC, real-time, napęd, bezpieczeństwo |
 | High-level | Jetson Nano | wizja, AI, logika śledzenia, fuzja danych |
 
 ### 2.2 Komunikacja
 
-- STM32 ↔ Jetson Nano: UART / CAN (planowane)
+- Odbiornik RC ↔ STM32: PWM / PPM
+- STM32 ↔ Jetson Nano: Ethernet
+- STM32 ↔ ESC: USART1 / USART2
+- Debug: ST-LINK / USART3
 - STM32 ↔ czujniki: I2C i SPI
+
+Szczegółowy mapping interfejsów znajduje się w `docs/ARCHITECTURE.md`.
 
 ## 3. Sprzęt
 
@@ -74,7 +79,7 @@ Projekt robota mobilnego zdolnego do śledzenia człowieka, z wyraźnym rozdzia�
 
 ### 4.2 Testy peryferiów
 
-#### UART
+#### UART (NUCLEO-F103RB bring-up)
 
 - env: `uart_led`
 - USART2: PA2 (TX), PA3 (RX - niewykorzystywany)
@@ -115,7 +120,7 @@ Projekt robota mobilnego zdolnego do śledzenia człowieka, z wyraźnym rozdzia�
 #### URM09 - szybki log
 
 - env: `urm09_fast_log`
-- log dystansu przez USART2
+- log dystansu przez USART2 (F103 bring-up)
 - skan I2C na starcie
 - symulacja wielu czujników
 
@@ -156,17 +161,23 @@ Warstwy:
 
 ## 7. Roadmapa
 
-### MVP
+### Etap 1
 
-- stabilna komunikacja STM32 ↔ Jetson
-- śledzenie człowieka kamerą
+- sterowanie RC przez STM32
+- interpretacja kanałów RC i bezpieczeństwo nadrzędne
 - podstawowe unikanie kolizji
 
-### Kolejne etapy
+### Etap 2
 
 - ROS
 - fuzja sensorów (EKF / Kalman)
 - rozpoznawanie konkretnej osoby
+
+### Etap 3
+
+- śledzenie człowieka kamerą
+- logika follow-me
+- stabilna komunikacja STM32 ↔ Jetson po Ethernet
 
 ## 8. Notatki badawcze
 
@@ -183,4 +194,3 @@ Projekt w fazie aktywnych testów sprzętowych i architektury systemu.
 - `docs/` – system architecture and interfaces
 - `firmware/` – STM32 firmware projects
 - `ai/` – Jetson Nano software
-

@@ -1,11 +1,13 @@
 # PROTOCOL.md
 
 Protokół komunikacyjny pomiędzy **STM32 (low-level, real-time)** a **Jetson Nano (high-level, AI)**.
+Warstwa transportowa: **Ethernet**.
+W Etapie 1 główne sterowanie pochodzi z RC lokalnie przez STM32, a ten dokument opisuje kontrakt dla etapów wyższych i wspólną semantykę trybów pracy.
 
 Celem protokołu jest:
 - deterministyczna i odporna komunikacja
 - minimalna złożoność (MVP)
-- łatwa migracja UART → CAN → DDS
+- jednoznaczny kontrakt interfejsowy
 
 Dokument stanowi **kontrakt interfejsowy** między firmware STM32 a software Jetson.
 
@@ -23,17 +25,24 @@ Dokument stanowi **kontrakt interfejsowy** między firmware STM32 a software Jet
 ## 2. Warstwa fizyczna
 
 ### MVP
-- interfejs: **UART**
-- prędkość: `921600 bps` (docelowo), startowo `115200`
-- format: `8N1`
+- interfejs: **Ethernet**
+- transport aplikacyjny definiowany po stronie implementacji
 
-### Docelowo
-- **CAN 2.0B**
-- bitrate: `500 kbps`
+### Uwagi
+- dokument nie definiuje ramkowania UART
+- dokument nie zakłada użycia CAN do komunikacji z Jetson
 
 ---
 
-## 3. Model komunikacji
+## 3. Transport Ethernet (STM32 ↔ Jetson)
+
+- komunikacja STM32 ↔ Jetson działa po Ethernet
+- protokół na tym etapie opisuje wyłącznie kontrakt wiadomości aplikacyjnych
+- szczegóły enkapsulacji i stosu sieciowego są po stronie implementacji firmware i software Jetson
+
+---
+
+## 4. Model komunikacji
 
 - model: **request-less publish / subscribe**
 - STM32 wysyła stan cyklicznie
@@ -48,25 +57,16 @@ Brak blokujących zapytań.
 
 ---
 
-## 4. Format ramki (UART)
+## 5. Format wiadomości aplikacyjnych
 
-### 4.1 Struktura ramki
-
-```
-+--------+------+-----+---------+------+--------+
-|  SOF   | LEN  | ID  | PAYLOAD | CRC  |  EOF   |
-+--------+------+-----+---------+------+--------+
-| 0xAA55 | 1 B  | 1 B |  N B    | 2 B  | 0x55AA |
-```
-
-- **SOF** – start of frame
-- **LEN** – długość PAYLOAD
-- **ID** – typ wiadomości
-- **CRC** – CRC-16 (X25)
+- dokument definiuje typy wiadomości i ich ładunek
+- enkapsulacja transportowa zależy od implementacji Ethernet
+- `ID` wskazuje typ wiadomości
+- pola poniżej opisują payload
 
 ---
 
-## 5. Typy wiadomości
+## 6. Typy wiadomości
 
 ### 5.1 STM32 → Jetson (STATE)
 
@@ -131,13 +131,18 @@ uint8_t mode
 
 `mode`:
 - 0 – idle
-- 1 – follow
-- 2 – manual
-- 3 – emergency_stop
+- 1 – manual_rc
+- 2 – limit_speed
+- 3 – stop_obstacle
+- 4 – lost_signal
+- 5 – follow_vision
+- 6 – emergency_stop
+
+`manual_rc` jest trybem domyślnym Etapu 1, a `follow_vision` pozostaje zarezerwowany dla etapu śledzenia człowieka.
 
 ---
 
-## 6. Częstotliwości
+## 7. Częstotliwości
 
 | Wiadomość | Częstotliwość |
 |----------|---------------|
@@ -147,16 +152,16 @@ uint8_t mode
 
 ---
 
-## 7. Bezpieczeństwo
+## 8. Bezpieczeństwo
 
 - brak valid command → STOP
-- CRC fail → discard frame
+- integrity check fail → discard message
 - Jetson silence > 200 ms → STOP
 - tryb emergency_stop nadpisuje wszystko
 
 ---
 
-## 8. Wersjonowanie
+## 9. Wersjonowanie
 
 ```
 uint8_t protocol_version_major
@@ -167,11 +172,10 @@ Zmiana MAJOR = breaking change
 
 ---
 
-## 9. Migracja (plan)
+## 10. Rozszerzenia (plan)
 
-1. UART + custom protocol (MVP)
-2. CAN + te same ID
-3. ROS 2 + DDS
+1. Ethernet + custom protocol (MVP)
+2. ROS 2 + DDS
 
 ---
 

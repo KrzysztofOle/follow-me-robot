@@ -81,7 +81,7 @@ Celem dokumentu jest:
 
 - robot porusza się
 - napęd aktywny
-- odbierane komendy ruchu
+- odbierane komendy ruchu z RC lub wyższej warstwy sterowania
 
 **Warunki utrzymania:**
 
@@ -118,7 +118,7 @@ Celem dokumentu jest:
 
 - natychmiastowe zatrzymanie
 - sprzętowe odcięcie zasilania napędu
-- ignorowanie komend z Jetsona
+- ignorowanie komend z RC i wyższych warstw sterowania
 
 **Wejście:**
 

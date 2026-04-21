@@ -18,6 +18,7 @@ Dokument obowiązuje **wszystkie warstwy systemu**, ze szczególnym naciskiem na
 3. Brak danych ≡ zagrożenie
 4. System musi przejść do stanu bezpiecznego samodzielnie
 5. Jetson Nano nigdy nie ma bezpośredniej kontroli nad napędem
+6. STM32 może nadpisać sygnał RC, jeśli wymaga tego bezpieczeństwo
 
 ---
 
@@ -41,8 +42,9 @@ Przejście do **SAFE_STOP** lub **EMERGENCY_STOP** jest możliwe z każdego stan
 
 E‑STOP może zostać wyzwolony przez:
 - wejście sprzętowe (przycisk E‑STOP)
+- failsafe RC / utrata sygnału sterowania
 - watchdog firmware
-- timeout komunikacji z Jetson Nano
+- timeout komunikacji z warstwą nadrzędną
 - krytyczny błąd czujnika
 - błąd konfiguracji systemu
 
@@ -51,6 +53,7 @@ E‑STOP może zostać wyzwolony przez:
 Po aktywacji:
 - natychmiastowe wyzerowanie komend prędkości
 - napęd przechodzi w tryb hamowania / freewheel (wg konfiguracji)
+- obstacle detection ma wyższy priorytet niż komenda RC
 - ignorowanie wszystkich komend z Jetsona
 - wymagana ręczna interwencja do wyjścia z trybu E‑STOP
 
@@ -140,9 +143,9 @@ i nie może być wyłączone ani obejście programowe.
 ## 5. Bezpieczeństwo komunikacji
 
 Zgodnie z `PROTOCOL.md`:
-- brak komendy → STOP
+- brak odświeżenia sygnału sterowania → STOP
 - CRC error → ramka odrzucona
-- timeout Jetsona (>200 ms) → SAFE_STOP
+- timeout sygnału sterowania (>200 ms) → SAFE_STOP
 
 ---
 

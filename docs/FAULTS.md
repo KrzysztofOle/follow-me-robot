@@ -42,9 +42,9 @@ Dokument jest ściśle powiązany z:
 
 ## 3. Błędy komunikacji
 
-### F2‑COM‑01: Timeout komunikacji z Jetson Nano
+### F2‑COM‑01: Timeout sygnału sterowania RC
 
-- **Opis:** brak poprawnych ramek w zadanym czasie
+- **Opis:** brak aktualizacji kanałów RC w zadanym czasie
 - **Wykrycie:** licznik czasu w STM32
 - **Reakcja:** SAFE_STOP
 

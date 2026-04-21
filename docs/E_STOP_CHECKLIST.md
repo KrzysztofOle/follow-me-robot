@@ -93,10 +93,10 @@ Checklistę należy wykonać **przed pierwszym ruchem robota**, po **każdej zmi
 
 ---
 
-## 4. Test komunikacji Jetson ↔ STM32
+## 4. Test sygnału sterowania
 
-### 4.1 Timeout Jetsona
-- ☐ Przerwanie komunikacji
+### 4.1 Utrata sygnału RC
+- ☐ Przerwanie sygnału sterowania RC
 - ☐ Po ~200 ms:
   - ☐ SAFE_STOP lub EMERGENCY_STOP
   - ☐ brak ruchu robota
