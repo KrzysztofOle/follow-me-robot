@@ -1,0 +1,25 @@
+---
+const { title } = Astro.props;
+---
+
+<html lang="pl">
+  <head>
+    <meta charset="UTF-8" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header>
+      <img src="/logo/Logo_v2.png" alt="Śledzik logo" width="300" />
+      <hr />
+    </header>
+
+    <main>
+      <slot />
+    </main>
+
+    <footer>
+      <hr />
+      <p>© Krzysztof Olejnik</p>
+    </footer>
+  </body>
+</html>
