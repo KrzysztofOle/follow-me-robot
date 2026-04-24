@@ -1,16 +1,72 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
+import { createSlugger } from "../lib/heading-utils.js";
 
 // Dynamic import README z root repo
 const readme = await import("../../../README.md");
 const { Content, frontmatter } = readme;
+const markdown = readme.rawContent();
+
+function buildToc(content) {
+  const toc = [];
+  const slugger = createSlugger();
+  const lines = content.split(/\r?\n/);
+  let inCodeBlock = false;
+
+  for (const line of lines) {
+    const fenceMatch = line.match(/^(```|~~~)/);
+    if (fenceMatch) {
+      inCodeBlock = !inCodeBlock;
+      continue;
+    }
+
+    if (inCodeBlock) {
+      continue;
+    }
+
+    const headingMatch = line.match(/^(##|###)\s+(.+?)\s*#*\s*$/);
+    if (!headingMatch) {
+      continue;
+    }
+
+    const level = headingMatch[1].length;
+    const text = headingMatch[2].trim();
+
+    if (!text) {
+      continue;
+    }
+
+    toc.push({
+      text,
+      id: slugger(text),
+      level,
+    });
+  }
+
+  return toc;
+}
+
+const toc = buildToc(markdown);
 ---
 
-<MainLayout title="Dokumentacja">
-  <article class="prose prose-slate max-w-3xl mx-auto">
-    <h1>{frontmatter?.title ?? "Dokumentacja"}</h1>
-    <div class="docs-content bg-gray-50 border rounded-lg p-4 mb-6">
+<MainLayout title="Dokumentacja" mainClass="w-full">
+  <div class="max-w-6xl mx-auto px-6 py-8 grid grid-cols-1 lg:grid-cols-[250px_1fr] gap-10">
+    <aside class="hidden lg:block">
+      <nav class="text-sm space-y-2 sticky top-20">
+        {toc.map((item) => (
+          <a
+            href={`#${item.id}`}
+            class={`block text-gray-600 hover:text-blue-500 ${item.level === 3 ? "pl-4" : ""}`}
+          >
+            {item.text}
+          </a>
+        ))}
+      </nav>
+    </aside>
+
+    <article class="prose prose-slate max-w-none docs-content">
+      <h1>{frontmatter?.title ?? "Dokumentacja"}</h1>
       <Content />
-    </div>
-  </article>
+    </article>
+  </div>
 </MainLayout>
