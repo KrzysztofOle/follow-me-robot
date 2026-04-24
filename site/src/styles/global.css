@@ -144,6 +144,21 @@ aside nav a {
   padding: 4px 0;
 }
 
+/* Docs TOC scroll spy */
+#toc a {
+  color: #6b7280;
+  transition: color 0.2s;
+}
+
+#toc a:hover {
+  color: #111827;
+}
+
+#toc a.active {
+  color: #2563eb;
+  font-weight: 600;
+}
+
 aside nav a:hover {
   color: #2563eb;
 }
