@@ -3,14 +3,36 @@ import MainLayout from "../layouts/MainLayout.astro";
 ---
 
 <MainLayout title="Śledzik 🤖">
-  <h2>Projekt robota Follow-Me</h2>
 
-  <p>Robot transportowy podążający za użytkownikiem.</p>
+  <!-- HERO -->
+  <section class="text-center py-12">
+    
+    <img 
+      src="/logo/Logo_v2.png" 
+      alt="Śledzik logo" 
+      class="mx-auto w-[250px] mb-6"
+    />
 
-  <h3>Status</h3>
-  <ul>
-    <li>✔️ Platforma: hoverboard</li>
-    <li>✔️ STM32 + Nucleo</li>
-    <li>🔄 Bluetooth follow</li>
-  </ul>
+    <h1 class="text-4xl font-bold mb-4">
+      🤖 Projekt robota Follow-Me
+    </h1>
+
+    <p class="text-lg text-gray-600 max-w-xl mx-auto">
+      Robot transportowy podążający za użytkownikiem, 
+      zbudowany na bazie hoverboardu i STM32.
+    </p>
+
+  </section>
+
+  <!-- STATUS -->
+  <section class="mt-10">
+    <h2 class="text-2xl font-semibold mb-4">Status projektu</h2>
+
+    <ul class="space-y-2 text-gray-700">
+      <li>✔️ Napęd: silniki z hoverboardu</li>
+      <li>✔️ Sterowanie: STM32 Nucleo</li>
+      <li>🔄 Tryb: sterowanie RC (etap 1)</li>
+    </ul>
+  </section>
+
 </MainLayout>
