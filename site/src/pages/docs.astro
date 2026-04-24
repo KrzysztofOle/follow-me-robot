@@ -1,16 +1,30 @@
 ---
 import MainLayout from "../layouts/MainLayout.astro";
+
+// Dynamic import README z root repo
+const readme = await import("../../../README.md");
+const { Content, frontmatter } = readme;
 ---
 
 <MainLayout title="Dokumentacja">
-  <h2>Dokumentacja projektu</h2>
-
-  <p>Opis architektury i komponentów robota.</p>
-
-  <h3>System</h3>
-  <ul>
-    <li>STM32 Nucleo</li>
-    <li>VL53L8 ToF</li>
-    <li>Bluetooth RSSI</li>
-  </ul>
+  <article class="prose prose-slate max-w-none 
+        prose-headings:font-bold
+        prose-h1:text-3xl
+        prose-h2:text-2xl
+        prose-h2:mt-10
+        prose-h2:border-b
+        prose-h2:pb-2
+        prose-p:text-gray-700
+        prose-li:marker:text-gray-500
+        prose-code:bg-gray-100
+        prose-code:px-1
+        prose-code:rounded
+        prose-pre:bg-gray-900
+        prose-pre:text-gray-100
+        prose-pre:p-4
+        prose-pre:rounded
+      ">
+    <h1>{frontmatter?.title ?? "Dokumentacja"}</h1>
+    <Content />
+  </article>
 </MainLayout>
