@@ -9,6 +9,8 @@ const { Content, frontmatter } = readme;
 <MainLayout title="Dokumentacja">
   <article class="prose prose-slate max-w-3xl mx-auto">
     <h1>{frontmatter?.title ?? "Dokumentacja"}</h1>
-    <Content />
+    <div class="docs-content bg-gray-50 border rounded-lg p-4 mb-6">
+      <Content />
+    </div>
   </article>
 </MainLayout>
