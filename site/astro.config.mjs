@@ -57,6 +57,8 @@ const siteDir = dirname(fileURLToPath(import.meta.url));
 const repoRoot = resolve(siteDir, '..');
 
 export default defineConfig({
+  site: 'https://KrzysztofOle.github.io',
+  base: '/follow-me-robot',
   markdown: {
     syntaxHighlight: false,
     rehypePlugins: [
