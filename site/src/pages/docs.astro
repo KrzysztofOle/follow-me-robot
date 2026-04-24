@@ -78,9 +78,36 @@ const toc = buildToc(markdown);
     return document.getElementById(id);
   });
 
+  function setActiveOnLoad() {
+    const scrollPosition = window.scrollY + 120;
+
+    const headings = Array.from(document.querySelectorAll("h2, h3"));
+
+    let current = headings[0];
+
+    for (const h of headings) {
+      if (h.offsetTop <= scrollPosition) {
+        current = h;
+      }
+    }
+
+    if (current) {
+      const id = current.id;
+      const link = document.querySelector(`#toc a[href="#${id}"]`);
+
+      document.querySelectorAll("#toc a").forEach((l) => l.classList.remove("active"));
+      link?.classList.add("active");
+    }
+  }
+
+  window.addEventListener("load", setActiveOnLoad);
+  setActiveOnLoad();
+
   const observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
+        if (!entry.target.id) return;
+
         const id = entry.target.id;
         const link = document.querySelector(`#toc a[href="#${id}"]`);
 
@@ -91,7 +118,7 @@ const toc = buildToc(markdown);
       });
     },
     {
-      rootMargin: "-30% 0px -60% 0px",
+      rootMargin: "-40% 0px -50% 0px",
       threshold: 0,
     }
   );
