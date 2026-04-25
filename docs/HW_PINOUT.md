@@ -108,9 +108,7 @@ Rekomendowane opcje:
 
 | UART   | TX  | RX  | Złącze NUCLEO | Uwagi                                                            |
 |--------|-----|-----|---------------|------------------------------------------------------------------|
-| USART1 | PB6 | PB7 | CN10          | Najczystszy wybor dla modulu szeregowego                         |
 | USART6 | PC6 | PC7 | CN7           | Dobra alternatywa, ale pin jest wspoldzielony z innymi funkcjami |
-
 
 ## Uwagi projektowe
 
