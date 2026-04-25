@@ -1,189 +1,120 @@
-# 🔌 STM32H755ZIT6 – Wykorzystanie pinów (NUCLEO-ZIO)
+# STM32H755ZI / NUCLEO-H755ZI-Q - wykorzystanie pinow na złączach CN7-CN10
 
-Obudowa układu: LQFP144
+Zakres dokumentu:
 
-## 🧠 Podsumowanie
+- dotyczy tylko złącz CN7, CN8, CN9 i CN10 na NUCLEO-H755ZI-Q
+- mapowanie pinow MCU oparto na datasheet STM32H755xI
+- mapowanie na złącza oparto na UM2408 dla NUCLEO-H745ZI-Q / NUCLEO-H755ZI-Q
 
-Projekt wykorzystuje kilka kluczowych peryferiów STM32:
+Obudowa MCU: LQFP144
 
-- 2 × UART
-- 2 × SPI
-- 2 × I2C
-- SDMMC
-- CAN
-- wejścia RC (PWM)
-- GPIO (INT)
+## Podsumowanie
 
----
+Projekt wykorzystuje te klasy interfejsow:
 
-## 📡 UART
+- 3 x UART
+- 2 x SPI
+- 2 x I2C
+- SDMMC1
+- CAN1
+- 4 kanaly PWM / RC
+- kilka linii GPIO / INT
 
-| Interfejs | TX         | RX         | Status  |
-|-----------|------------|------------|---------|
-| USART_A   | PB6 (CN10) | PB7 (CN10) | używany |
-| USART_B   | PD5  (CN9) | PD6 (CN9)  | używany |
+## UART
 
----
+| Interfejs | Pin MCU   | Złącze NUCLEO | Funkcja w datasheet                            | Status                   |
+|-----------|-----------|---------------|------------------------------------------------|--------------------------|
+| USART_A   | PB6 / PB7 | CN10 D1 / D0  | LPUART1_TX / LPUART1_RX, USART1_TX / USART1_RX | używany                  |
+| USART_B   | PD5 / PD6 | CN9 D53 / D52 | USART2_TX / USART2_RX                          | używany                  |
+| USART_C   | PC6 / PC7 | CN7 D16 / D21 | USART6_TX / USART6_RX                          | opcjonalny               |
 
-## 🔌 SPI
+## SPI
 
-| SPI   | SCK       | MISO      | MOSI       | CS         | Status  |
-|-------|-----------|-----------|------------|------------|---------|
-| SPI_A | PA5 (CN7) | PA6 (CN7) | PB5  (CN7) | PD14 (CN7) | używany |
-| SPI_B | PB3 (CN7) | PB4 (CN7) | PB15 (CN7) | PA4  (NN7) | używany |
+| Interfejs | SCK  | MISO | MOSI | CS / NSS | Złącze NUCLEO             | Funkcja w datasheet          | Status  |
+|-----------|------|------|------|----------|---------------------------|------------------------------|---------|
+| SPI_A     | PA5  | PA6  | PB5  | PD14     | CN7 D13 / D12 / D11 / D10 | SPI1_SCK / MISO / MOSI / NSS | używany |
+| SPI_B     | PB10 | PB14 | PB15 | PB12     | CN10 D36 / CN9 D65 / CN7 D17 / CN7 D19 | SPI2_SCK / MISO / MOSI / NSS | używany |
 
----
+Uwagi:
 
-## 🔗 I2C
+- SPI_B zostal przeniesiony na SPI2, zeby uniknac konfliktu z SPI_A.
+- Zestaw PB10 / PB14 / PB15 / PB12 nie dzieli pinow z SPI_A i jest wyprowadzony na CN10, CN9 oraz CN7.
 
-| Magistrala | SCL  | SDA  | Status  |
-|------------|------|------|---------|
-| I2C_A      | PB8  | PB9  | używany |
-| I2C_B      | PF14 | PF15 | używany |
+## I2C
 
----
+| Magistrala | SCL  | SDA  | Złącze NUCLEO | Funkcja w datasheet | Status  |
+|------------|------|------|---------------|---------------------|---------|
+| I2C_A      | PB8  | PB9  | CN7 D15 / D14 | I2C1_SCL / I2C1_SDA | używany |
+| I2C_B      | PF14 | PF15 | CN9 D69 / D68 | I2C2_SCL / I2C2_SDA | używany |
 
-## 💾 SDMMC
+## SDMMC
 
-| Sygnał | Pin  |
-|--------|------|
-| D0     | PC8  |
-| D1     | PC9  |
-| D2     | PC10 |
-| D3     | PC11 |
-| CK     | PC12 |
-| CMD    | PD2  |
+| Sygnał | Pin MCU | Złącze NUCLEO | Funkcja w datasheet |
+|--------|---------|---------------|---------------------|
+| D0     | PC8     | CN8 D43       | SDMMC1_D0           |
+| D1     | PC9     | CN8 D44       | SDMMC1_D1           |
+| D2     | PC10    | CN8 D45       | SDMMC1_D2           |
+| D3     | PC11    | CN8 D46       | SDMMC1_D3           |
+| CK     | PC12    | CN8 D47       | SDMMC1_CK           |
+| CMD    | PD2     | CN8 D48       | SDMMC1_CMD          |
 
----
+## CAN
 
-## 🚗 CAN
+| Interfejs | RX  | TX  | Złącze NUCLEO | Funkcja w datasheet   | Status  |
+|-----------|-----|-----|---------------|-----------------------|---------|
+| CAN_1     | PD0 | PD1 | CN9 D67 / D66 | FDCAN1_RX / FDCAN1_TX | używany |
 
-| Sygnał | Pin  |
-|--------|------|
-| CAN_TX | PB13 |
-| CAN_RX | PB12 |
+## RC / PWM
 
----
+| Kanal  | Pin MCU | Złącze NUCLEO | Funkcja w datasheet |
+|--------|---------|---------------|---------------------|
+| RC_CH1 | PA8     | CN10 D6       | TIM1_CH1            |
+| RC_CH2 | PE11    | CN10 D5       | TIM1_CH2            |
+| RC_CH3 | PE13    | CN10 D3       | TIM1_CH3            |
+| RC_CH4 | PA0     | CN10 D32      | TIM2_CH1            |
 
-## 🎮 RC (PWM)
+## GPIO / INT
 
-| Kanał  | Pin         |
-|--------|-------------|
-| RC_CH1 | PA8  (CN10) |
-| RC_CH2 | PE11 (CN10) |
-| RC_CH3 | PE13 (CN10) |
-| RC_CH4 | PA0  (CN10) |
+| Sygnał | Pin MCU | Złącze NUCLEO | Linia EXTI | Funkcja w datasheet         | Uwagi                                         |
+|--------|---------|---------------|------------|-----------------------------|-----------------------------------------------|
+| INT_A  | PD15    | CN7 D9        | EXTI15     | TIM4_CH4                    | GPIO ogolnego przeznaczenia                   |
+| INT_B  | PE14    | CN10 D4       | EXTI14     | GPIO ogolnego przeznaczenia | Wolny pin, bez konfliktu z reszta interfejsow |
+| INT_A2 | PE6     | CN10 D38      | EXTI6      | GPIO ogolnego przeznaczenia | Wolny pin, bez konfliktu z reszta interfejsow |
+| INT_B2 | PE12    | CN10 D39      | EXTI12     | GPIO ogolnego przeznaczenia | Wolny pin, bez konfliktu z reszta interfejsow |
 
----
+Uwagi do przerwan:
 
-## ⚠️ GPIO / INT
+- EXTI jest mapowane po numerze pinu, nie po porcie.
+- Piny z tym samym numerem EXTI nie moga obslugiwac niezaleznych przerwan jednoczesnie.
+- Dlatego w tej tabeli kazdy sygnal INT ma osobna linie EXTI.
 
-| Sygnał | Pin.       |
-|--------|------------|
-| INT_A  | PD15 (CN7) |
-| INT_B  | PG9  (CN7) |
-| INT_A2 | PC6  (CN7) |
-| INT_B2 | PB5  (CN9) |
+## Zgodnosc z dokumentacja producentow
 
----
+- `PB6 / PB7` sa poprawnym wyborem dla `USART1` i rownoczesnie sa wyprowadzone na CN10 jako `D1 / D0`.
+- `PD5 / PD6` sa poprawnym wyborem dla `USART2` i sa wyprowadzone na CN9 jako `D53 / D52`.
+- `PC6 / PC7` sa poprawnym wyborem dla `USART6` i sa wyprowadzone na CN7 jako `D16 / D21`.
+- `PA5 / PA6 / PB5 / PD14` odpowiadaja `SPI1` na CN7.
+- `PB10 / PB14 / PB15 / PB12` odpowiadaja `SPI2` na CN10, CN9 i CN7.
+- `PB8 / PB9` odpowiadaja `I2C1` na CN7.
+- `PF14 / PF15` odpowiadaja `I2C2` na CN9.
+- `PC8 / PC9 / PC10 / PC11 / PC12 / PD2` odpowiadaja `SDMMC1` na CN8.
+- `PD0 / PD1` odpowiadaja `FDCAN1` na CN9.
+- `PE6`, `PE14` i `PE12` sa wolnymi liniami GPIO na CN10 i nadaja sie na dodatkowe INT.
 
-## 📊 Wykorzystanie portów
+## Dostepne dodatkowe UART
 
-| Port | Status |
-|------|--------|
-| PA | 🟠 częściowo użyty |
-| PB | 🔴 mocno użyty |
-| PC | 🔴 SDMMC |
-| PD | 🟠 częściowo |
-| PE | 🟠 RC |
-| PF | 🟢 częściowo użyty |
-| PG | 🟢 głównie wolny |
+Rekomendowane opcje:
 
----
+| UART   | TX  | RX  | Złącze NUCLEO | Uwagi                                                            |
+|--------|-----|-----|---------------|------------------------------------------------------------------|
+| USART1 | PB6 | PB7 | CN10          | Najczystszy wybor dla modulu szeregowego                         |
+| USART6 | PC6 | PC7 | CN7           | Dobra alternatywa, ale pin jest wspoldzielony z innymi funkcjami |
 
-## 🟢 Wolne piny (istotne)
 
-### 🔌 CN7
+## Uwagi projektowe
 
-- PB12
-- PB13
-- PA5
-- PA6
-- PA7
-- PB6
-- PB7
-
-### 🔌 CN10
-
-- PA8
-- PC6
-- PC7
-- PG6
-- PB6
-- PB7
-- PE7–PE15 (częściowo)
-
-### 🔌 CN9
-
-- PC0
-- PC3
-- PB1
-- PC2
-- PF11
-- PE2
-- PE4
-- PE5
-- PE6
-- PE3
-- PF8
-- PF7
-- PF9
-- PD10
-
----
-
-## 📡 Dostępne dodatkowe UART
-
-### ✅ Rekomendowane dla DFPlayer Mini
-
-| UART   | TX  | RX  | Lokalizacja | Uwagi              |
-|--------|-----|-----|-------------|--------------------|
-| USART1 | PB6 | PB7 | CN7 / CN10  | ⭐ najlepszy wybór |
-| USART6 | PC6 | PC7 | CN10        | dobra alternatywa  |
-| UART4  | PA0 | PA1 | CN10        | opcjonalny         |
-
----
-
-## 🎯 Rekomendacja (DFPlayer)
-
-👉 Użyj:
-
-```
-USART1:
-TX → PB6
-RX → PB7
-```
-
-### Powody:
-- wolne piny
-- brak konfliktów
-- dobre rozmieszczenie
-- pełny sprzętowy UART
-
----
-
-## ⚡ Uwagi projektowe
-
-- Port **PB** jest mocno obciążony → unikać dalszego dokładania
-- Porty **PF / PG** mają duży zapas → preferowane do nowych funkcji
-- SDMMC używa dedykowanych pinów → poprawnie
-
----
-
-## 🚀 Wnioski
-
-✔ System ma duży zapas pinów  
-✔ Dostępne min. 3 dodatkowe UART  
-✔ Możliwość dalszej rozbudowy bez zmian architektury  
-
----
+- Dokument zaklada tylko złącza CN7-CN10, bez morpha CN11-CN12.
+- Nie uzywam tu pinow morpho jako zrodel dla shielda.
+- `UART4` zostal usuniety z rekomendacji, bo pelne mapowanie dla `PA1` wychodzi poza CN7-CN10.
+- `CAN` przeniesiono na `PD0 / PD1`, bo to odpowiada board-level `CAN_1` na UM2408.
+- `PG9` jest pinem wspoldzielonym; przy dalszej rozbudowie trzeba pilnowac konfliktow z funkcjami domyslnymi NUCLEO.
