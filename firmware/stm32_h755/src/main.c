@@ -8,10 +8,12 @@
 #define LED_GPIO_PORT GPIOB
 #define LED_GPIO_PIN GPIO_PIN_0
 #define LED_GPIO_CLK_ENABLE() __HAL_RCC_GPIOB_CLK_ENABLE()
+#define BLINK_DELAY_MS 150U
 #elif defined(CORE_CM4)
 #define LED_GPIO_PORT GPIOE
 #define LED_GPIO_PIN GPIO_PIN_1
 #define LED_GPIO_CLK_ENABLE() __HAL_RCC_GPIOE_CLK_ENABLE()
+#define BLINK_DELAY_MS 600U
 #endif
 
 static void SystemClock_Config(void);
@@ -25,7 +27,7 @@ int main(void) {
 
   while (1) {
     HAL_GPIO_TogglePin(LED_GPIO_PORT, LED_GPIO_PIN);
-    HAL_Delay(250U);
+    HAL_Delay(BLINK_DELAY_MS);
   }
 }
 

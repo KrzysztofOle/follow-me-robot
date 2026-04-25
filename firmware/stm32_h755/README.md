@@ -100,6 +100,7 @@ Ten katalog zawiera gotowy projekt PlatformIO dla testu uruchomienia płytki:
 - zegar systemowy: `SystemClock_Config()` z HSI
 - test LED: `PB0` (`LD1`) dla CM7
 - test LED: `PE1` (`LD2`) dla CM4
+- tempo migania: CM7 szybciej, CM4 wolniej
 
 W VS Code użyj:
 
@@ -118,6 +119,7 @@ Uwagi:
 
 - CM7 i CM4 mają osobne obrazy i osobne uploady.
 - miganie realizowane jest klasycznie przez `HAL_GPIO_TogglePin()` i `HAL_Delay()`
+- CM7 używa krótszego okresu niż CM4, żeby łatwo odróżnić rdzenie po LED
 - Nie uruchamiaj uploadu obu rdzeni równolegle na tym samym ST-LINK.
 - Jeśli nie widzisz migania, najpierw sprawdź `LD1` i `LD2`.
 
