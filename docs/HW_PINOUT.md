@@ -24,15 +24,15 @@ Projekt wykorzystuje te klasy interfejsow:
 
 | Interfejs | Pin MCU   | Złącze NUCLEO | Funkcja w datasheet                            | Status                   |
 |-----------|-----------|---------------|------------------------------------------------|--------------------------|
-| USART_A   | PB6 / PB7 | CN10 D1 / D0  | LPUART1_TX / LPUART1_RX, USART1_TX / USART1_RX | używany                  |
-| USART_B   | PD5 / PD6 | CN9 D53 / D52 | USART2_TX / USART2_RX                          | używany                  |
-| USART_C   | PC6 / PC7 | CN7 D16 / D21 | USART6_TX / USART6_RX                          | opcjonalny               |
+| USART_A   | PB6 / PB7 | CN10 D1 / D0  | LPUART1_TX / LPUART1_RX, USART1_TX / USART1_RX | używany        ESC_1     |
+| USART_B   | PD5 / PD6 | CN9 D53 / D52 | USART2_TX / USART2_RX                          | używany        ESC_2     |
+| USART_C   | PC6 / PC7 | CN7 D16 / D21 | USART6_TX / USART6_RX                          | używany     DFPlayer     |
 
 ## SPI
 
-| Interfejs | SCK  | MISO | MOSI | CS / NSS | Złącze NUCLEO             | Funkcja w datasheet          | Status  |
-|-----------|------|------|------|----------|---------------------------|------------------------------|---------|
-| SPI_A     | PA5  | PA6  | PB5  | PD14     | CN7 D13 / D12 / D11 / D10 | SPI1_SCK / MISO / MOSI / NSS | używany |
+| Interfejs | SCK  | MISO | MOSI | CS / NSS | Złącze NUCLEO                          | Funkcja w datasheet          | Status  |
+|-----------|------|------|------|----------|----------------------------------------|------------------------------|---------|
+| SPI_A     | PA5  | PA6  | PB5  | PD14     | CN7 D13 / D12 / D11 / D10              | SPI1_SCK / MISO / MOSI / NSS | używany |
 | SPI_B     | PB10 | PB14 | PB15 | PB12     | CN10 D36 / CN9 D65 / CN7 D17 / CN7 D19 | SPI2_SCK / MISO / MOSI / NSS | używany |
 
 Uwagi:
@@ -57,6 +57,7 @@ Uwagi:
 | D3     | PC11    | CN8 D46       | SDMMC1_D3           |
 | CK     | PC12    | CN8 D47       | SDMMC1_CK           |
 | CMD    | PD2     | CN8 D48       | SDMMC1_CMD          |
+| CD     | PG10    | CN8 D14       | SDMMC1_CD           |
 
 ## CAN
 
