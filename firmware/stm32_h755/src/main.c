@@ -1,4 +1,6 @@
 #include "stm32h7xx_hal.h"
+#include <stdio.h>
+#include <string.h>
 #if !defined(CORE_CM7) && !defined(CORE_CM4)
 #error "This firmware expects CORE_CM7 or CORE_CM4 to be defined by the board."
 #endif
@@ -8,68 +10,51 @@
 #define LED_GPIO_PIN GPIO_PIN_0
 #define LED_GPIO_CLK_ENABLE() __HAL_RCC_GPIOB_CLK_ENABLE()
 #define BLINK_DELAY_MS 150U
-#define BOOT_PULSES 2U
-#define BOOT_ON_MS 80U
-#define BOOT_OFF_MS 120U
-#define WARMUP_TOGGLES 4U
-#define COMM_CORE_COUNTER_FIELD cm7_counter
-#define COMM_PEER_COUNTER_FIELD cm4_counter
-#define COMM_LAST_SEEN_FIELD cm7_seen_cm4
-#define COMM_BOOT_COUNT_FIELD cm7_boot_count
-#define COMM_STAGE_FIELD cm7_stage
-#define COMM_PEER_STAGE_FIELD cm4_stage
+#define LOG_PERIOD_MS 1000U
 #elif defined(CORE_CM4)
 #define LED_GPIO_PORT GPIOE
 #define LED_GPIO_PIN GPIO_PIN_1
 #define LED_GPIO_CLK_ENABLE() __HAL_RCC_GPIOE_CLK_ENABLE()
 #define BLINK_DELAY_MS 600U
-#define BOOT_PULSES 1U
-#define BOOT_ON_MS 120U
-#define BOOT_OFF_MS 180U
-#define WARMUP_TOGGLES 2U
-#define COMM_CORE_COUNTER_FIELD cm4_counter
-#define COMM_PEER_COUNTER_FIELD cm7_counter
-#define COMM_LAST_SEEN_FIELD cm4_seen_cm7
-#define COMM_BOOT_COUNT_FIELD cm4_boot_count
-#define COMM_STAGE_FIELD cm4_stage
-#define COMM_PEER_STAGE_FIELD cm7_stage
 #endif
-
-typedef struct {
-  uint32_t magic;
-  uint32_t cm7_boot_count;
-  uint32_t cm4_boot_count;
-  uint32_t cm7_stage;
-  uint32_t cm4_stage;
-  uint32_t cm7_counter;
-  uint32_t cm4_counter;
-  uint32_t cm7_seen_cm4;
-  uint32_t cm4_seen_cm7;
-} shared_comm_t;
-
-#define COMM_MAGIC 0x434F4D48UL
-#define COMM_SHARED ((volatile shared_comm_t *)0x30000000UL)
-#define COMM_DIAG_ENABLE 0U
 
 static void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-static void WarmupPhase(void);
-static void SharedComm_Init(void);
-static void SharedComm_Tick(void);
-static void BootSignature(void);
+static void MX_USART3_UART_Init(void);
 static void Error_Handler(void);
 
+#if defined(CORE_CM7)
+static UART_HandleTypeDef huart3;
+static void LogString(const char *text);
+#endif
+
 int main(void) {
+#if defined(CORE_CM7)
+  uint32_t last_log_tick = 0U;
+#endif
+
   HAL_Init();
   SystemClock_Config();
   MX_GPIO_Init();
-  BootSignature();
-  WarmupPhase();
-  SharedComm_Init();
+#if defined(CORE_CM7)
+  MX_USART3_UART_Init();
+  setvbuf(stdout, NULL, _IONBF, 0);
+  LogString("CM7 start\r\n");
+  last_log_tick = HAL_GetTick();
+#endif
 
   while (1) {
-    SharedComm_Tick();
     HAL_GPIO_TogglePin(LED_GPIO_PORT, LED_GPIO_PIN);
+#if defined(CORE_CM7)
+    if ((HAL_GetTick() - last_log_tick) >= LOG_PERIOD_MS) {
+      last_log_tick = HAL_GetTick();
+      char buf[40];
+      int len = snprintf(buf, sizeof(buf), "CM7 heartbeat tick=%lu\r\n", (unsigned long)last_log_tick);
+      if (len > 0) {
+        LogString(buf);
+      }
+    }
+#endif
     HAL_Delay(BLINK_DELAY_MS);
   }
 }
@@ -115,75 +100,44 @@ static void MX_GPIO_Init(void) {
   HAL_GPIO_WritePin(LED_GPIO_PORT, LED_GPIO_PIN, GPIO_PIN_RESET);
 }
 
-static void SharedComm_Init(void) {
-#if COMM_DIAG_ENABLE
-  if (COMM_SHARED->magic != COMM_MAGIC) {
-    COMM_SHARED->magic = COMM_MAGIC;
-    COMM_SHARED->cm7_boot_count = 0U;
-    COMM_SHARED->cm4_boot_count = 0U;
-    COMM_SHARED->cm7_stage = 0U;
-    COMM_SHARED->cm4_stage = 0U;
-    COMM_SHARED->cm7_counter = 0U;
-    COMM_SHARED->cm4_counter = 0U;
-    COMM_SHARED->cm7_seen_cm4 = 0U;
-    COMM_SHARED->cm4_seen_cm7 = 0U;
+#if defined(CORE_CM7)
+static void MX_USART3_UART_Init(void) {
+  GPIO_InitTypeDef gpio_init = {0};
+
+  __HAL_RCC_USART3_CLK_ENABLE();
+  __HAL_RCC_GPIOD_CLK_ENABLE();
+
+  gpio_init.Pin = GPIO_PIN_8 | GPIO_PIN_9;
+  gpio_init.Mode = GPIO_MODE_AF_PP;
+  gpio_init.Pull = GPIO_PULLUP;
+  gpio_init.Speed = GPIO_SPEED_FREQ_HIGH;
+  gpio_init.Alternate = GPIO_AF7_USART3;
+  HAL_GPIO_Init(GPIOD, &gpio_init);
+
+  huart3.Instance = USART3;
+  huart3.Init.BaudRate = 115200;
+  huart3.Init.WordLength = UART_WORDLENGTH_8B;
+  huart3.Init.StopBits = UART_STOPBITS_1;
+  huart3.Init.Parity = UART_PARITY_NONE;
+  huart3.Init.Mode = UART_MODE_TX_RX;
+  huart3.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart3.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart3.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart3.Init.ClockPrescaler = UART_PRESCALER_DIV1;
+  huart3.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+
+  if (HAL_UART_Init(&huart3) != HAL_OK) {
+    Error_Handler();
   }
-  __DMB();
-#endif
 }
 
-static void BootSignature(void) {
-  uint32_t pulse;
-
-#if COMM_DIAG_ENABLE
-  COMM_SHARED->COMM_BOOT_COUNT_FIELD += 1U;
-  COMM_SHARED->COMM_STAGE_FIELD = 1U;
-  __DMB();
-#endif
-
-  for (pulse = 0U; pulse < BOOT_PULSES; ++pulse) {
-    HAL_GPIO_WritePin(LED_GPIO_PORT, LED_GPIO_PIN, GPIO_PIN_SET);
-    HAL_Delay(BOOT_ON_MS);
-    HAL_GPIO_WritePin(LED_GPIO_PORT, LED_GPIO_PIN, GPIO_PIN_RESET);
-    HAL_Delay(BOOT_OFF_MS);
+static void LogString(const char *text) {
+  size_t len = strlen(text);
+  if (HAL_UART_Transmit(&huart3, (uint8_t *)text, (uint16_t)len, HAL_MAX_DELAY) != HAL_OK) {
+    Error_Handler();
   }
-
-#if COMM_DIAG_ENABLE
-  COMM_SHARED->COMM_STAGE_FIELD = 2U;
-  __DMB();
-#endif
 }
-
-static void WarmupPhase(void) {
-  uint32_t toggle;
-
-  for (toggle = 0U; toggle < WARMUP_TOGGLES; ++toggle) {
-    HAL_GPIO_TogglePin(LED_GPIO_PORT, LED_GPIO_PIN);
-    HAL_Delay(200U);
-  }
-
-  HAL_GPIO_WritePin(LED_GPIO_PORT, LED_GPIO_PIN, GPIO_PIN_RESET);
-#if COMM_DIAG_ENABLE
-  COMM_SHARED->COMM_STAGE_FIELD = 2U;
-  __DMB();
 #endif
-}
-
-static void SharedComm_Tick(void) {
-#if COMM_DIAG_ENABLE
-  uint32_t local_counter;
-  uint32_t peer_counter;
-
-  COMM_SHARED->COMM_STAGE_FIELD = 3U;
-  local_counter = COMM_SHARED->COMM_CORE_COUNTER_FIELD + 1U;
-  COMM_SHARED->COMM_CORE_COUNTER_FIELD = local_counter;
-  __DMB();
-  peer_counter = COMM_SHARED->COMM_PEER_COUNTER_FIELD;
-  COMM_SHARED->COMM_LAST_SEEN_FIELD = peer_counter;
-  COMM_SHARED->COMM_STAGE_FIELD = 4U;
-  __DMB();
-#endif
-}
 
 static void Error_Handler(void) {
   __disable_irq();
