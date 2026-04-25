@@ -56,15 +56,9 @@ Jetson Nano pełni wyłącznie rolę:
 stm32_h755_project/
 ├─ README.md
 ├─ platformio.ini
+├─ boards/
 ├─ include/
-│  ├─ common/
-│  ├─ protocol/
-│  └─ board/
 ├─ src/
-│  ├─ m7/
-│  ├─ m4/
-│  ├─ comm/
-│  └─ safety/
 └─ test/
 ```
 
@@ -94,6 +88,46 @@ Zasady:
 
 ---
 
-## 6. Status
+## 6. Bring-up na NUCLEO-H755ZI-Q
+
+Ten katalog zawiera gotowy projekt PlatformIO dla testu uruchomienia płytki:
+
+- board: `nucleo_h755zi_q_cm7`
+- board: `nucleo_h755zi_q_cm4`
+- framework: `stm32cube`
+- debug / upload: `ST-LINK`
+- tryb testowy: standardowe miganie LED przez HAL
+- zegar systemowy: `SystemClock_Config()` z HSI
+- test LED: `PB0` (`LD1`) dla CM7
+- test LED: `PE1` (`LD2`) dla CM4
+
+W VS Code użyj:
+
+- `H755 CM7: Build + Upload + Monitor`
+- `H755 CM4: Build + Upload + Monitor`
+- `H755 Dual-Core: Build + Upload CM7 + CM4`
+- `PIO Debug H755 CM7`
+- `PIO Debug H755 CM4`
+
+Wymagane narzędzia:
+
+- rozszerzenie `PlatformIO IDE`
+- dostęp do `~/.platformio/penv/bin/pio`
+
+Uwagi:
+
+- CM7 i CM4 mają osobne obrazy i osobne uploady.
+- miganie realizowane jest klasycznie przez `HAL_GPIO_TogglePin()` i `HAL_Delay()`
+- Nie uruchamiaj uploadu obu rdzeni równolegle na tym samym ST-LINK.
+- Jeśli nie widzisz migania, najpierw sprawdź `LD1` i `LD2`.
+
+Na tej maszynie płytka jest widoczna jako:
+
+- `/dev/cu.usbmodem24203`
+- `/dev/tty.usbmodem24203`
+
+---
+
+## 7. Status
 
 Firmware STM32H755 znajduje się w fazie **projektowania architektury i przygotowania implementacji produkcyjnej**.

@@ -1,0 +1,8 @@
+{
+  "editor.wordWrap": "off",
+  "files.associations": {
+    "*.c": "c",
+    "*.h": "c"
+  }
+}
+

@@ -1,0 +1,55 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "platformio-debug",
+      "request": "launch",
+      "name": "PIO Debug H755 CM7",
+      "executable": "${workspaceFolder}/.pio/build/nucleo_h755zi_q_cm7/firmware.elf",
+      "projectEnvName": "nucleo_h755zi_q_cm7",
+      "toolchainBinDir": "${env:HOME}/.platformio/packages/toolchain-gccarmnoneeabi/bin",
+      "internalConsoleOptions": "openOnSessionStart",
+      "svdPath": "${env:HOME}/.platformio/platforms/ststm32/misc/svd/STM32H755_CM7.svd",
+      "preLaunchTask": {
+        "type": "PlatformIO",
+        "task": "Pre-Debug"
+      }
+    },
+    {
+      "type": "platformio-debug",
+      "request": "launch",
+      "name": "PIO Debug H755 CM7 (without uploading)",
+      "executable": "${workspaceFolder}/.pio/build/nucleo_h755zi_q_cm7/firmware.elf",
+      "projectEnvName": "nucleo_h755zi_q_cm7",
+      "toolchainBinDir": "${env:HOME}/.platformio/packages/toolchain-gccarmnoneeabi/bin",
+      "internalConsoleOptions": "openOnSessionStart",
+      "svdPath": "${env:HOME}/.platformio/platforms/ststm32/misc/svd/STM32H755_CM7.svd",
+      "loadMode": "manual"
+    },
+    {
+      "type": "platformio-debug",
+      "request": "launch",
+      "name": "PIO Debug H755 CM4",
+      "executable": "${workspaceFolder}/.pio/build/nucleo_h755zi_q_cm4/firmware.elf",
+      "projectEnvName": "nucleo_h755zi_q_cm4",
+      "toolchainBinDir": "${env:HOME}/.platformio/packages/toolchain-gccarmnoneeabi/bin",
+      "internalConsoleOptions": "openOnSessionStart",
+      "svdPath": "${env:HOME}/.platformio/platforms/ststm32/misc/svd/STM32H755_CM4.svd",
+      "preLaunchTask": {
+        "type": "PlatformIO",
+        "task": "Pre-Debug"
+      }
+    },
+    {
+      "type": "platformio-debug",
+      "request": "launch",
+      "name": "PIO Debug H755 CM4 (without uploading)",
+      "executable": "${workspaceFolder}/.pio/build/nucleo_h755zi_q_cm4/firmware.elf",
+      "projectEnvName": "nucleo_h755zi_q_cm4",
+      "toolchainBinDir": "${env:HOME}/.platformio/packages/toolchain-gccarmnoneeabi/bin",
+      "internalConsoleOptions": "openOnSessionStart",
+      "svdPath": "${env:HOME}/.platformio/platforms/ststm32/misc/svd/STM32H755_CM4.svd",
+      "loadMode": "manual"
+    }
+  ]
+}

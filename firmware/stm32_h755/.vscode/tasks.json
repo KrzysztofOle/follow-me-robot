@@ -1,0 +1,96 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "PIO: Build H755 CM7",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "nucleo_h755zi_q_cm7"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Upload H755 CM7",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "nucleo_h755zi_q_cm7", "-t", "upload"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Monitor H755 CM7",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": [
+        "device",
+        "monitor",
+        "-b",
+        "115200",
+        "-p",
+        "/dev/cu.usbmodem24203"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "H755 CM7: Build + Upload + Monitor",
+      "dependsOn": [
+        "PIO: Build H755 CM7",
+        "PIO: Upload H755 CM7",
+        "PIO: Monitor H755 CM7"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Build H755 CM4",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "nucleo_h755zi_q_cm4"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Upload H755 CM4",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": ["run", "-e", "nucleo_h755zi_q_cm4", "-t", "upload"],
+      "group": "build",
+      "problemMatcher": []
+    },
+    {
+      "label": "PIO: Monitor H755 CM4",
+      "type": "shell",
+      "command": "~/.platformio/penv/bin/pio",
+      "args": [
+        "device",
+        "monitor",
+        "-b",
+        "115200",
+        "-p",
+        "/dev/cu.usbmodem24203"
+      ],
+      "problemMatcher": []
+    },
+    {
+      "label": "H755 CM4: Build + Upload + Monitor",
+      "dependsOn": [
+        "PIO: Build H755 CM4",
+        "PIO: Upload H755 CM4",
+        "PIO: Monitor H755 CM4"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "H755 Dual-Core: Build + Upload CM7 + CM4",
+      "dependsOn": [
+        "PIO: Build H755 CM7",
+        "PIO: Build H755 CM4",
+        "PIO: Upload H755 CM7",
+        "PIO: Upload H755 CM4"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    }
+  ]
+}
