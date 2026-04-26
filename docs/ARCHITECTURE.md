@@ -7,6 +7,7 @@ Dokument opisuje **architekturę systemową** robota mobilnego rozwijanego etapo
 ## 1. Przegląd systemu
 
 System składa się z dwóch głównych domen:
+
 - **Low-level (real-time)** – sterowanie, sensoryka, bezpieczeństwo, interpretacja RC
 - **High-level (AI / decyzyjna)** – percepcja, śledzenie, planowanie ruchu
 
@@ -30,6 +31,7 @@ System składa się z dwóch głównych domen:
 **Rola:** deterministyczna kontrola robota
 
 Zakres odpowiedzialności:
+
 - odbiór i interpretacja sygnału RC (PWM per-channel)
 - obsługa czujników:
   - URM09 (I2C)
@@ -44,6 +46,7 @@ Zakres odpowiedzialności:
   - override sygnału RC przez warstwę safety
 
 **Pętla sterowania Etapu 1:**
+
 1. odczyt sygnału RC (kanały)
 2. mapowanie sygnału (throttle / steering)
 3. odczyt czujników przeszkód
@@ -51,6 +54,7 @@ Zakres odpowiedzialności:
 5. wysłanie komendy do ESC
 
 **Cechy:**
+
 - brak alokacji dynamicznej (docelowo)
 - stałe częstotliwości pętli
 - możliwość pracy bez Jetsona (tryb awaryjny)
@@ -62,6 +66,7 @@ Zakres odpowiedzialności:
 **Rola:** percepcja i decyzje w późniejszych etapach
 
 Zakres odpowiedzialności:
+
 - przetwarzanie obrazu (OpenCV)
 - detekcja człowieka (YOLO / MediaPipe)
 - estymacja położenia celu
@@ -69,6 +74,7 @@ Zakres odpowiedzialności:
 - (docelowo) ROS i fuzja sensorów
 
 **Cechy:**
+
 - brak hard real-time
 - możliwość restartu bez utraty kontroli napędu
 - wysoki pobór mocy, niski priorytet bezpieczeństwa
@@ -78,16 +84,19 @@ Zakres odpowiedzialności:
 ## 3. Podział na rdzenie (STM32H755 – docelowo)
 
 ### 3.1 Cortex-M7
+
 - główna pętla sterowania ruchem
 - komunikacja Ethernet z Jetsonem
 - obliczenia filtrów (np. Kalman / LPF)
 
 ### 3.2 Cortex-M4
+
 - obsługa czujników
 - zbieranie danych I2C / SPI
 - obsługa IMU
 
 Komunikacja M7 ↔ M4:
+
 - message queue / shared memory
 
 ---
@@ -96,23 +105,23 @@ Komunikacja M7 ↔ M4:
 
 ### 4.1 Debug (ST-LINK)
 
-| Interfejs | Piny | Połączenie | Uwagi |
-| --- | --- | --- | --- |
-| USART3 | PD8 → TX, PD9 → RX | ST-LINK Virtual COM | Nie używać tych pinów do innych celów |
+| Interfejs | Piny               | Połączenie          | Uwagi                                 |
+| --------- | ------------------ | ------------------- | ------------------------------------- |
+| USART3    | PD8 → TX, PD9 → RX | ST-LINK Virtual COM | Nie używać tych pinów do innych celów |
 
 ### 4.2 ESC (2x sterownik silnika - UART)
 
 #### ESC #1
 
-| Interfejs | Piny | Poziomy logiczne | Uwagi |
-| --- | --- | --- | --- |
-| USART1 | PB6 → TX, PB7 → RX | 3.3V | Sterowanie niezależne |
+| Interfejs | Piny               | Poziomy logiczne | Uwagi                 |
+| --------- | ------------------ | ---------------- | --------------------- |
+| USART1    | PB6 → TX, PB7 → RX | 3.3V             | Sterowanie niezależne |
 
 #### ESC #2
 
-| Interfejs | Piny | Poziomy logiczne | Uwagi |
-| --- | --- | --- | --- |
-| USART2 | PD5 → TX, PD6 → RX | 3.3V | Sterowanie niezależne |
+| Interfejs | Piny               | Poziomy logiczne | Uwagi                 |
+| --------- | ------------------ | ---------------- | --------------------- |
+| USART2    | PD5 → TX, PD6 → RX | 3.3V             | Sterowanie niezależne |
 
 - oba ESC sterowane niezależnie
 - wymagane wspólne GND
@@ -120,16 +129,16 @@ Komunikacja M7 ↔ M4:
 
 ### 4.3 Jetson
 
-| Interfejs | Przeznaczenie | Uwagi |
-| --- | --- | --- |
-| Ethernet | komunikacja STM32 ↔ Jetson | Brak użycia UART do komunikacji z Jetson |
+| Interfejs | Przeznaczenie              | Uwagi                                    |
+| --------- | -------------------------- | ---------------------------------------- |
+| Ethernet  | komunikacja STM32 ↔ Jetson | Brak użycia UART do komunikacji z Jetson |
 
 ### 4.4 RC receiver (Etap 1)
 
-| Interfejs | Przeznaczenie | Uwagi |
-| --- | --- | --- |
-| PWM (per-channel) | odbiór kanałów RC | domyślny tryb dla FlySky FS-BS6 |
-| PPM | alternatywnie | wspierane, jeśli użyty jest inny odbiornik |
+| Interfejs         | Przeznaczenie     | Uwagi                                      |
+| ----------------- | ----------------- | ------------------------------------------ |
+| PWM (per-channel) | odbiór kanałów RC | domyślny tryb dla FlySky FS-BS6            |
+| PPM               | alternatywnie     | wspierane, jeśli użyty jest inny odbiornik |
 
 - CH1 – skręt
 - CH2 – prędkość
@@ -139,12 +148,12 @@ Komunikacja M7 ↔ M4:
 
 ### RC Channel Mapping
 
-| Channel | Function | Range | Notes |
-|--------|-----------|-------|-------|
-| CH1 | Steering | 1000–2000 µs | skręt |
-| CH2 | Throttle | 1000–2000 µs | przód/tył |
-| CH3 | Mode | discrete | tryb pracy |
-| CH4 | E-STOP | binary | opcjonalne |
+| Channel | Function  | Range        | Notes      |
+|---------|-----------|--------------|------------|
+| CH1     | Steering  | 1000–2000 µs | skręt      |
+| CH2     | Throttle  | 1000–2000 µs | przód/tył  |
+| CH3     | Mode      | discrete     | tryb pracy |
+| CH4     | E-STOP    | binary       | opcjonalne |
 
 ### Control Priority
 
@@ -187,12 +196,12 @@ Każdy wyższy poziom nadpisuje niższy.
 
 ## 8. Częstotliwości pracy (docelowe)
 
-| Moduł | Częstotliwość |
-|-----|---------------|
-| I2C sensory | 50–100 Hz |
-| Pętla sterowania STM32 | 200–500 Hz |
-| Kamera / AI | 15–30 FPS |
-| Komunikacja STM32 ↔ Jetson | 50–100 Hz |
+| Moduł                      | Częstotliwość |
+|----------------------------|---------------|
+| I2C sensory                | 50–100 Hz     |
+| Pętla sterowania STM32     | 200–500 Hz    |
+| Kamera / AI                | 15–30 FPS     |
+| Komunikacja STM32 ↔ Jetson | 50–100 Hz     |
 
 ---
 

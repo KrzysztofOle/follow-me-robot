@@ -3,6 +3,7 @@
 Dokument opisuje **mechanizmy bezpieczeństwa (functional safety)** robota mobilnego *Follow‑Me Robot*.
 
 Celem warstwy SAFETY jest zapewnienie, że robot:
+
 - **nigdy nie wykona niekontrolowanego ruchu**,
 - **zatrzyma się w przypadku błędu**,
 - pozostanie bezpieczny nawet przy awarii oprogramowania AI lub komunikacji.
@@ -35,13 +36,13 @@ Każdy wyższy poziom nadpisuje niższy.
 
 ## 2. Stany bezpieczeństwa systemu
 
-| Stan | Opis |
-|-----|------|
-| BOOT | start systemu, brak ruchu |
-| IDLE | system gotowy, napęd nieaktywny |
-| ACTIVE | ruch robota dozwolony |
-| SAFE_STOP | kontrolowane zatrzymanie |
-| EMERGENCY_STOP | natychmiastowe zatrzymanie |
+| Stan           | Opis                            |
+|----------------|---------------------------------|
+| BOOT           | start systemu, brak ruchu       |
+| IDLE           | system gotowy, napęd nieaktywny |
+| ACTIVE         | ruch robota dozwolony           |
+| SAFE_STOP      | kontrolowane zatrzymanie        |
+| EMERGENCY_STOP | natychmiastowe zatrzymanie      |
 
 Przejście do **SAFE_STOP** lub **EMERGENCY_STOP** jest możliwe z każdego stanu.
 
@@ -52,6 +53,7 @@ Przejście do **SAFE_STOP** lub **EMERGENCY_STOP** jest możliwe z każdego stan
 ### 3.1 Źródła E‑STOP
 
 E‑STOP może zostać wyzwolony przez:
+
 - wejście sprzętowe (przycisk E‑STOP)
 - watchdog firmware
 - timeout komunikacji z warstwą nadrzędną
@@ -61,6 +63,7 @@ E‑STOP może zostać wyzwolony przez:
 ### 3.2 Zachowanie po E‑STOP
 
 Po aktywacji:
+
 - natychmiastowe wyzerowanie komend prędkości
 - napęd przechodzi w tryb hamowania / freewheel (wg konfiguracji)
 - obstacle detection ma wyższy priorytet niż komenda RC
@@ -76,6 +79,7 @@ Po aktywacji:
 Samo software'owe `STOP` po stronie VESC nie jest wystarczające do zapewnienia pełnego bezpieczeństwa układu napędowego.
 
 Powody:
+
 - software'owy `STOP` nadal zakłada poprawne działanie elektroniki sterującej i toru komunikacji,
 - awaria firmware, zawieszenie MCU lub utrata kontroli nad logiką sterowania może pozostawić napęd w stanie aktywnym,
 - błąd po stronie Jetson Nano nie może być jedynym mechanizmem ochrony przed ruchem silników.
@@ -96,6 +100,7 @@ Podstawowy tor mocy powinien być zaprojektowany jako:
 `bateria → E‑STOP (NC) → przekaźnik/stycznik (NC) → VESC/AESC`
 
 Rola mechanicznego E‑STOP:
+
 - zapewnia bezpośrednie, fizyczne przerwanie toru mocy,
 - nie zależy od logiki systemu operacyjnego ani od komunikacji z komputerem pokładowym,
 - stanowi pierwszy, lokalny punkt wymuszenia bezpieczeństwa w obwodzie napędu.
@@ -111,11 +116,13 @@ W praktyce oznacza to, że zatrzymanie kontrolowane i odcięcie energii są odr�
 ### 4.5 Ochrona przed łukiem elektrycznym
 
 Nie wolno odcinać dużych prądów bez wcześniejszego soft-stopu, ponieważ zwiększa to ryzyko:
+
 - łuku elektrycznego na stykach,
 - degradacji przekaźnika lub stycznika,
 - zakłóceń w torze zasilania i uszkodzenia elementów mocy.
 
 Zalecana sekwencja:
+
 1. soft stop,
 2. krótka zwłoka umożliwiająca spadek prądu,
 3. hard cut.
@@ -141,10 +148,12 @@ i nie może być wyłączone ani obejście programowe.
 ## 4. Watchdogi
 
 ### 4.1 Watchdog sprzętowy (IWDG)
+
 - aktywny zawsze w trybie produkcyjnym
 - reset MCU przy zawieszeniu firmware
 
 ### 4.2 Watchdog programowy
+
 - monitoruje pętle sterowania, komunikację i sensory
 - wykrycie anomalii → SAFE_STOP
 
@@ -153,6 +162,7 @@ i nie może być wyłączone ani obejście programowe.
 ## 5. Bezpieczeństwo komunikacji
 
 Zgodnie z `PROTOCOL.md`:
+
 - LOST_SIGNAL: brak aktualizacji PWM > 100 ms lub aktywacja failsafe w odbiorniku RC → SAFE_STOP
 - brak odświeżenia sygnału sterowania → STOP
 - CRC error → ramka odrzucona
@@ -178,6 +188,7 @@ Zgodnie z `PROTOCOL.md`:
 ## 8. Tryb standalone
 
 Przy braku Jetsona:
+
 - robot zatrzymany
 - system w stanie bezpiecznym
 
@@ -186,6 +197,7 @@ Przy braku Jetsona:
 ## 9. Testy bezpieczeństwa
 
 Każda zmiana MUSI być przetestowana pod kątem:
+
 - E‑STOP
 - watchdog
 - timeoutów

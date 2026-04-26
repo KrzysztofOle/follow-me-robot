@@ -150,6 +150,7 @@ Dokument jest ściśle powiązany z:
 ## 9. Mapowanie błędów na testy
 
 Każdy błąd klasy **F2** i **F3** musi posiadać odpowiadający test w:
+
 - `E_STOP_CHECKLIST.md`
 
 Błędy bez testu = **niezatwierdzony system**.

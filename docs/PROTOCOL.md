@@ -5,6 +5,7 @@ Warstwa transportowa: **Ethernet**.
 W Etapie 1 główne sterowanie pochodzi z RC lokalnie przez STM32, a ten dokument opisuje kontrakt dla etapów wyższych i wspólną semantykę trybów pracy.
 
 Celem protokołu jest:
+
 - deterministyczna i odporna komunikacja
 - minimalna złożoność (MVP)
 - jednoznaczny kontrakt interfejsowy
@@ -25,10 +26,12 @@ Dokument stanowi **kontrakt interfejsowy** między firmware STM32 a software Jet
 ## 2. Warstwa fizyczna
 
 ### MVP
+
 - interfejs: **Ethernet**
 - transport aplikacyjny definiowany po stronie implementacji
 
 ### Uwagi
+
 - dokument nie definiuje ramkowania UART
 - dokument nie zakłada użycia CAN do komunikacji z Jetson
 

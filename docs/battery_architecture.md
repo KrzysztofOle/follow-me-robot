@@ -11,19 +11,20 @@
 
 ## ⚡ 2. Dane znamionowe
 
-| Parametr | Wartość |
-|---------|--------|
-| Napięcie nominalne | 36 V |
-| Napięcie maksymalne | 42 V |
-| Napięcie minimalne | ~30 V |
-| Pojemność | 4,4 Ah |
-| Energia | 158,4 Wh |
+| Parametr            | Wartość  |
+|---------------------|----------|
+| Napięcie nominalne  | 36 V     |
+| Napięcie maksymalne | 42 V     |
+| Napięcie minimalne  | ~30 V    |
+| Pojemność           | 4,4 Ah   |
+| Energia             | 158,4 Wh |
 
 ---
 
 ## 🔌 3. Architektura elektryczna
 
 Bateria posiada **jedno wspólne złącze** wykorzystywane do:
+
 - zasilania układu napędowego (VESC),
 - ładowania pakietu.
 
@@ -40,7 +41,9 @@ BATERIA ──┤
 ## ⚠️ 4. Ograniczenia i ryzyka
 
 ### ❗ Ładowanie podczas jazdy
+
 **Zabronione** — może prowadzić do:
+
 - uszkodzenia ładowarki,
 - niestabilności napięcia DC,
 - zadziałania zabezpieczeń BMS (odcięcie zasilania).
@@ -58,13 +61,13 @@ BATERIA ──┤
 
 ## ⚙️ 5. Zalecane ustawienia VESC
 
-| Parametr | Wartość |
-|---------|--------|
-| Battery current max | 10–12 A |
+| Parametr              | Wartość    |
+|-----------------------|------------|
+| Battery current max   | 10–12 A    |
 | Battery current regen | −4 do −6 A |
-| Motor current | 20–30 A |
-| Cutoff start | 33 V |
-| Cutoff end | 30 V |
+| Motor current         | 20–30 A    |
+| Cutoff start          | 33 V       |
+| Cutoff end            | 30 V       |
 
 ---
 
