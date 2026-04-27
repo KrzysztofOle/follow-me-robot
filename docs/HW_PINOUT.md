@@ -23,10 +23,10 @@ Projekt wykorzystuje te klasy interfejsow:
 ## UART
 
 | Interfejs | Pin MCU   | Złącze NUCLEO | Funkcja w datasheet                            | Status                   |
-|-----------|-----------|---------------|------------------------------------------------|--------------------------|
-| USART_A   | PB6 / PB7 | CN10 D1 / D0  | LPUART1_TX / LPUART1_RX, USART1_TX / USART1_RX | używany        ESC_1     |
-| USART_B   | PD5 / PD6 | CN9 D53 / D52 | USART2_TX / USART2_RX                          | używany        ESC_2     |
-| USART_C   | PC6 / PC7 | CN7 D16 / D21 | USART6_TX / USART6_RX                          | używany     DFPlayer     |
+|-----------|-----------|---------------|------------------------------------ -----------|--------------------------|
+| USART_A   | PB6 / PB7 | CN10 D1 / D0  | LPUART1_TX / LPUART1_RX, USART1_TX / USART1_RX | używany  J1   UART_ESC_1 |
+| USART_B   | PD5 / PD6 | CN9 D53 / D52 | USART2_TX / USART2_RX                          | używany  J1   UART_ESC_1 |
+| USART_C   | PC6 / PC7 | CN7 D16 / D21 | USART6_TX / USART6_RX                          | używany     DFPLAYER     |
 
 ## SPI
 
@@ -76,12 +76,16 @@ Uwagi:
 
 ## GPIO / INT
 
-| Sygnał | Pin MCU | Złącze NUCLEO | Linia EXTI | Funkcja w datasheet         | Uwagi                                         |
-|--------|---------|---------------|------------|-----------------------------|-----------------------------------------------|
-| INT_A  | PD15    | CN7 D9        | EXTI15     | TIM4_CH4                    | GPIO ogolnego przeznaczenia                   |
-| INT_B  | PE14    | CN10 D4       | EXTI14     | GPIO ogolnego przeznaczenia | Wolny pin, bez konfliktu z reszta interfejsow |
-| INT_A2 | PE6     | CN10 D38      | EXTI6      | GPIO ogolnego przeznaczenia | Wolny pin, bez konfliktu z reszta interfejsow |
-| INT_B2 | PE12    | CN10 D39      | EXTI12     | GPIO ogolnego przeznaczenia | Wolny pin, bez konfliktu z reszta interfejsow |
+| Sygnał      | Pin MCU | Złącze NUCLEO | Linia EXTI | Funkcja w datasheet                  | Uwagi                                    |
+|-------------|---------|---------------|------------|--------------------------------------|------------------------------------------|
+| INT_A       | PD15    | CN7 D9        | EXTI15     | Sygnał przerwania z czujnika VL53L8  | Złącze J5 nakładki                       |
+| INT_B       | PE14    | CN10 D4       | EXTI14     | Sygnał przerwania z czujnika VL53L8  | Złącze J6 nakładki                       |
+| INT_A2      | PE6     | CN10 D38      | EXTI6      | Opcionalny sygnał przerwania         | Złącze J3 nakładki                       |
+| INT_B2      | PE12    | CN10 D39      | EXTI12     | Opcionalny sygnał przerwania         | Złącze J4 nakładki                       |
+| SPI_I2C_N_A | PG12    | CN10 D2       |            | Tryb komunikacji czujnika VL53L8     | Złącze J5 nakładki                       |
+| SPI_I2C_N_B | PA15    | CN7 D9        |            | Tryb komunikacji czujnika VL53L8     | Złącze J6 nakładki                       |
+| LPn_A       | PG9     | CN10 D20      |            | Reset / wyłączanie czujnika VL53L8   | Złącze J5 nakładki                       |
+| LPn_B       | PB3     | CN7 D15       |            | Reset / wyłączanie czujnika VL53L8   | Złącze J6 nakładki                       |
 
 Uwagi do przerwan:
 
