@@ -109,8 +109,8 @@ Kolumny:
 | 10  | D3       | PE13        | RC_CH3 / PWM         |
 | 11  | PF10     | A7          | Unused / analog      |
 | 12  | D2       | PG14        | VL53L8CX SPI_I2C_N_B |
-| 13 | PA2 | A8 | Unused / analog |
-| 14 | D1 | PB6 | ESC_1 UART TX |
+| 13  | PA2      | A8          | Unused / analog |
+| 14  | D1       | PB6         | ESC_1 UART TX |
 | 15 | PG6 | D26 | Unused / board IO |
 | 16 | D0 | PB7 | ESC_1 UART RX |
 | 17 | PB2 | D27 | Unused / board IO |

@@ -25,8 +25,29 @@ Projekt wykorzystuje te klasy interfejsow:
 | Interfejs | Pin MCU   | Złącze NUCLEO | Funkcja w datasheet                            | Status                   |
 |-----------|-----------|---------------|------------------------------------ -----------|--------------------------|
 | USART_A   | PB6 / PB7 | CN10 D1 / D0  | LPUART1_TX / LPUART1_RX, USART1_TX / USART1_RX | używany  J1   UART_ESC_1 |
-| USART_B   | PD5 / PD6 | CN9 D53 / D52 | USART2_TX / USART2_RX                          | używany  J1   UART_ESC_1 |
+| USART_B   | PD5 / PD6 | CN9 D53 / D52 | USART2_TX / USART2_RX                          | używany  J2   UART_ESC_2 |
 | USART_C   | PC6 / PC7 | CN7 D16 / D21 | USART6_TX / USART6_RX                          | używany     DFPLAYER     |
+
+### USART_A - UART_ESC_1
+
+| Pin MCU   | Pin name | Złącze NUCLEO PIN | Funkcja w datasheet |  Nazwa sieci   |
+|-----------|----------|-------------------|---------------------|----------------|
+| PB6       |   D1     | CN10 14           | USART1_TX           | USART_A_TX     |
+| PB7       |   D0     | CN10 16           | USART1_RX           | USART_A_RX     |
+
+### USART_B - UART_ESC_2
+
+| Pin MCU   | Pin name | Złącze NUCLEO PIN | Funkcja w datasheet |  Nazwa sieci   |
+|-----------|----------|-------------------|---------------------|----------------|
+| PD5       |   D53    | CN9 6             | USART2_TX           | USART_B_TX     |
+| PD6       |   D52    | CN9 4             | USART2_RX           | USART_B_RX     |
+
+### USART_C - DFPLAYER
+
+| Pin MCU   | Pin name | Złącze NUCLEO PIN | Funkcja w datasheet |  Nazwa sieci   | Zlacze i pin nakladka |
+|-----------|----------|-------------------|---------------------|----------------|-----------------------|
+| PC6       |   D16    | CN7 1             | USART6_TX           | USART_C_TX     | M1 2                  |
+| PC7       |   D21    | CN7 11            | USART6_RX           | USART_C_RX     | M1 3                  |
 
 ## SPI
 
