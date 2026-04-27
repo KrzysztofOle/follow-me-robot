@@ -34,9 +34,9 @@ Generuje mapę głębi 8x8 (64 strefy), umożliwiając detekcję wielu obiektów
 | SDA / MOSI  | Dane I2C / SPI     |
 | SCL / SCK   | Zegar              |
 | MISO        | SPI                |
-| NCS         | Chip Select        |
-| INT         | Przerwanie         |
 | LPn (XSHUT) | Reset / wyłączanie |
+| INT         | Przerwanie         |
+| NCS         | Chip Select        |
 | SPI_I2C_N   | Wybór trybu        |
 
 ---
