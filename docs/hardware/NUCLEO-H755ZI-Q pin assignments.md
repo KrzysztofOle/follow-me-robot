@@ -95,39 +95,39 @@ Kolumny:
 
 ## CN10
 
-| Pin | Pin name | STM32H7 pin | Project function     |
-| --- | -------- | ----------- | -------------------- |
-| 1   | VDDA     | -           | Analog supply        |
-| 2   | D7       | PG12        | VL53L8CX SPI_I2C_N_A |
-| 3   | AGND     | -           | Analog ground        |
-| 4   | D6       | PA8         | RC_CH1 / PWM         |
-| 5   | GND      | -           | GND                  |
-| 6   | D5       | PE11        | RC_CH2 / PWM         |
-| 7   | GND      | -           | GND                  |
-| 8   | D4       | PE14        | VL53L8CX INT_B       |
-| 9   | PF6      | A6          | Unused / analog      |
-| 10  | D3       | PE13        | RC_CH3 / PWM         |
-| 11  | PF10     | A7          | Unused / analog      |
-| 12  | D2       | PG14        | VL53L8CX SPI_I2C_N_B |
-| 13  | PA2      | A8          | Unused / analog |
-| 14  | D1       | PB6         | ESC_1 UART TX |
-| 15 | PG6 | D26 | Unused / board IO |
-| 16 | D0 | PB7 | ESC_1 UART RX |
-| 17 | PB2 | D27 | Unused / board IO |
-| 18 | D42 | PE8 | Unused |
-| 19 | GND | - | GND |
-| 20 | D41 | PE7 | Unused |
-| 21 | PD13 | D28 | Unused |
-| 22 | D40 | PE10 | Unused |
-| 23 | PD12 | D29 | Unused |
-| 24 | D39 | PE12 | Unused |
-| 25 | PD11 | D30 | Unused |
-| 26 | D38 | PE6 | VL53L8CX INT_A2 |
-| 27 | PE2 | D31 | Unused |
-| 28 | D37 | PE15 | Unused |
-| 29 | PA0 | D32 | RC_CH4 / PWM |
-| 30 | D36 | PB10 | SPI_B SCK |
-| 31 | PB0 | D33 | Unused |
-| 32 | D35 | PB11 | Unused |
-| 33 | PE0 | D34 | Unused |
-| 34 | GND | - | GND |
+| Pin | Pin name | STM32H7 pin | Project function     | Board function            |
+| --- | -------- | ----------- | -------------------- | ------------------------- |
+| 1   | VDDA     | -           |                      | Analog supply             |
+| 2   | D7       | PG12        | VL53L8CX SPI_I2C_N_A |                           |
+| 3   | AGND     | -           |                      | Analog ground             |
+| 4   | D6       | PA8         | RC_CH1 / PWM         |                           |
+| 5   | GND      | -           | GND                  |                           |
+| 6   | D5       | PE11        | RC_CH2 / PWM         |                           |
+| 7   | GND      | -           | GND                  |                           |
+| 8   | D4       | PE14        | VL53L8CX INT_B       |                           |
+| 9   | PF6      | A6          |                      | Unused / analog           |
+| 10  | D3       | PE13        | RC_CH3 / PWM         |                           |
+| 11  | PF10     | A7          |                      | Unused / analog           |
+| 12  | D2       | PG14        | VL53L8CX SPI_I2C_N_B |                           |
+| 13  | PA2      | A8          |                      | Unused / analog           |
+| 14  | D1       | PB6         | ESC_1 UART TX        |                           |
+| 15  | PG6      | D26         |                      | Unused / board IO         |
+| 16  | D0       | PB7         | ESC_1 UART RX        |                           |
+| 17  | PB2      | D27         |                      | Unused / board IO         |
+| 18  | D42      | PE8         |                      |                           |
+| 19  | GND      | -           | GND                  |                           |
+| 20  | D41      | PE7         |                      |                           |
+| 21  | PD13     | D28         |                      |                           |
+| 22  | D40      | PE10        |                      |                           |
+| 23  | PD12     | D29         |                      |                           |
+| 24  | D39      | PE12        |                      |                           |
+| 25  | PD11     | D30         |                      |                           |
+| 26  | D38      | PE6         | VL53L8CX INT_A2      |                           |
+| 27  | PE2      | D31         |                      |                           |
+| 28  | D37      | PE15        |                      |                           |
+| 29  | PA0      | D32         | RC_CH4 / PWM         |                           |
+| 30  | D36      | PB10        | SPI_B SCK            |                           |
+| 31  | PB0      | D33         |                      |                           |
+| 32  | D35      | PB11        |                      |                           |
+| 33  | PE0      | D34         | Unused               |                           |
+| 34  | GND      | -           | GND                  |                           |

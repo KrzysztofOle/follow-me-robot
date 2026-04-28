@@ -37,7 +37,7 @@ Projekt wykorzystuje te klasy interfejsow:
 
 ### USART_B - UART_ESC_2
 
-| Pin MCU   | Pin name | Złącze NUCLEO PIN | Funkcja w datasheet |  Nazwa sieci   |
+| Pin MCU   | Pin name | Złącze NUCLEO PIN | Funkcja w datasheet | Nazwa sieci    |
 |-----------|----------|-------------------|---------------------|----------------|
 | PD5       |   D53    | CN9 6             | USART2_TX           | USART_B_TX     |
 | PD6       |   D52    | CN9 4             | USART2_RX           | USART_B_RX     |
