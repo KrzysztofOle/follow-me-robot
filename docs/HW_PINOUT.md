@@ -56,6 +56,18 @@ Projekt wykorzystuje te klasy interfejsow:
 | SPI_A     | PA5  | PA6  | PB5  | PD14     | CN7 D13 / D12 / D11 / D10              | SPI1_SCK / MISO / MOSI / NSS | używany |
 | SPI_B     | PB10 | PB14 | PB15 | PB12     | CN10 D36 / CN9 D65 / CN7 D17 / CN7 D19 | SPI2_SCK / MISO / MOSI / NSS | używany |
 
+## SPI_A - VL53L8CX Lewy
+
+| Pin MCU   | Pin name | Złącze NUCLEO PIN | Funkcja w datasheet |  Nazwa sieci   | Zlacze i pin nakladka |
+|-----------|----------|-------------------|---------------------|----------------|-----------------------|
+| PB5       |   D11    | CN7 14            |                     | TOF_L8_1_MOSI  | MOSI                  |
+| PA5       |   D13    | CN7 10            |                     | TOF_L8_1_SCK   | SCK                   |
+| PA6       |   D12    | CN7 12            |                     | TOF_L8_1_MISO  | MISO                  |
+| PG9       |   D8     | CN7 20            |                     | TOF_L8_1_LPn   | LPn                   |
+| PD15      |   D9     | CN7 18            |                     | TOF_L8_1_INT   | INT                   |
+| PD14      |   D10    | CN7 16            |                     | TOF_L8_1_CS    | NCS                   |
+| PG12      |   D7     | CN10 2            |                     | TOF_L8_1_CM    | SPI_I2C_N             |
+
 Uwagi:
 
 - SPI_B zostal przeniesiony na SPI2, zeby uniknac konfliktu z SPI_A.
